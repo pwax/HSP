@@ -23,15 +23,16 @@ This application allows users to:
 
 Dependencies
 ------------
+You need java.
 
 Installation
 ------------
+1. Install dependencies
+2. git clone https://github.com/pwax/HSP.git
+3. Install
 
-Troubleshooting
----------------
-
-FAQ
----
+Troubleshooting/FAQ
+-------------------
 Q: Why did the programmer quit his job?
 
 A: Because he didn't get arrays.

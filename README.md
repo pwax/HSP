@@ -5,8 +5,7 @@ CONTENTS
 * Introduction
 * Dependencies
 * Installation
-* Troubleshooting
-* FAQ
+* Troubleshooting/FAQ
 * Development Team
 
 Introduction

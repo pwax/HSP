@@ -1,4 +1,4 @@
-# IPIMS - Interactive Patient Information Management System
+# Interactive Patient Information Management System (IPIMS)
 
 CONTENTS
 --------

@@ -13,9 +13,7 @@ Introduction
 ------------
 This software is intended for the use of medical centers in need of an efficient up-to-
 
-date application. 
-
-This application allows users to:
+date application. This application allows users to:
 * Manage patients' information
 * Facilitate interactions between patients and healthcare providers
 * Analyze relevant statistical data for patient populations

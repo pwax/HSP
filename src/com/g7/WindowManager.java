@@ -6,6 +6,6 @@ package com.g7;
 public class WindowManager {
 
     public WindowManager(){
-
+    shite
     }
 }

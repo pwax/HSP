@@ -29,7 +29,7 @@ Installation
 ------------
 1. Install dependencies
 2. git clone https://github.com/pwax/HSP.git
-3. Install
+3. Do stuff
 
 Troubleshooting/FAQ
 -------------------

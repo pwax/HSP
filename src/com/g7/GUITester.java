@@ -10,7 +10,10 @@ import java.util.Scanner;
 
 public class GUITester {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
+
+        DataManager.getConnection();
+
         WindowManager windowManager = new WindowManager();
 
         Scanner keyboard = new Scanner(System.in);
@@ -21,6 +24,10 @@ public class GUITester {
         //Enter anything in console to quit or just exit on JFrame
         keyboard.next();
         System.exit(0);
+
+
+
+
     }
 }
 

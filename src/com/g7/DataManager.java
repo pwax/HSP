@@ -32,6 +32,16 @@ public class DataManager {
 
     }
 
+    public static void registerNewUser(String firstName, String lastName, String username, String password) {
+
+        System.out.println("inserting records into table");
+
+        //Statement statement = getConnection().createStatement();
+
+        //String sql = "INSERT INTO tUsers " + "Values (" + fir
+
+    }
+
 
 
 

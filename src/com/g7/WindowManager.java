@@ -91,10 +91,10 @@ public class WindowManager extends JFrame {
                 //Check correct input to login
                 switch (usernameField.getText()){
                     case ("p"):
-                        ShowPatientDashboard();
+                        ShowPatientDashboard(1);
                         break;
                     case ("d"):
-                        ShowDoctorDashboard();
+                        ShowDoctorDashboard(2);
                         break;
                     default:
                         contentPane.remove(invalidinputLabel);
@@ -224,6 +224,19 @@ public class WindowManager extends JFrame {
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
+                int accountType;
+
+                //Check current state of radio buttons
+                if(patientRadioButton.isSelected()){
+                    accountType = 0;
+                }else if(doctorRadioButton.isSelected()){
+                    accountType = 1;
+                }else if(nurseRadioButton.isSelected()){
+                    accountType = 2;
+                }else{
+                    accountType = 3;
+                }
+
                 //Apply register check and completion here
                // ShowLogin();
                 System.out.println("registering new user...");
@@ -254,7 +267,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Patient Dashboard
-    public void ShowPatientDashboard(){
+    public void ShowPatientDashboard(int accountid){
         contentPane.removeAll();
 
         //Title
@@ -267,7 +280,7 @@ public class WindowManager extends JFrame {
         editinfoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Edit Info
-                ShowEditInfo();
+                ShowEditInfo(accountid, 0);
             }
         });
         contentPane.add(editinfoButton);
@@ -277,7 +290,7 @@ public class WindowManager extends JFrame {
         healthconditionButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Update Health Conditions
-                ShowHealthCondition();
+                ShowHealthCondition(accountid);
             }
         });
         contentPane.add(healthconditionButton);
@@ -287,7 +300,7 @@ public class WindowManager extends JFrame {
         medicalhistoryButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //MMedical History
-                ShowMedicalHistory();
+                ShowMedicalHistory(accountid);
             }
         });
         contentPane.add(medicalhistoryButton);
@@ -297,7 +310,7 @@ public class WindowManager extends JFrame {
         scheduleappointmentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Schedule Appointment
-                ShowScheduleAppointment();
+                ShowScheduleAppointment(accountid);
             }
         });
         contentPane.add(scheduleappointmentButton);
@@ -317,7 +330,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Edit Info page
-    public void ShowEditInfo(){
+    public void ShowEditInfo(int accountid, int dashboardType){
         contentPane.removeAll();
 
         //First name
@@ -410,7 +423,7 @@ public class WindowManager extends JFrame {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Return to dashboard
-                ReturnToCurrentDashboard();
+                ReturnToCurrentDashboard(accountid, dashboardType);
             }
         });
         backButton.setBounds((contentPane.getWidth() / 9) * 1, (contentPane.getHeight() / 7) * 6, 100, 25);
@@ -423,7 +436,7 @@ public class WindowManager extends JFrame {
                 //Save changes
 
                 //Return to patient page
-                ShowPatientDashboard();
+                ShowPatientDashboard(accountid);
             }
         });
         acceptButton.setBounds((contentPane.getWidth() / 9) * 7, (contentPane.getHeight() / 7) * 6, 100, 25);
@@ -434,7 +447,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Health Condition page
-    public void ShowHealthCondition(){
+    public void ShowHealthCondition(int accountid){
         contentPane.removeAll();
 
 
@@ -444,7 +457,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Medical History page
-    public void ShowMedicalHistory(){
+    public void ShowMedicalHistory(int accountid){
         contentPane.removeAll();
 
 
@@ -454,7 +467,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Schedule Appointment page
-    public void ShowScheduleAppointment(){
+    public void ShowScheduleAppointment(int accountid){
         contentPane.removeAll();
 
 
@@ -464,7 +477,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Doctor Dashboard
-    public void ShowDoctorDashboard(){
+    public void ShowDoctorDashboard(int accountid){
         contentPane.removeAll();
 
         //Title
@@ -474,6 +487,12 @@ public class WindowManager extends JFrame {
 
         JButton editinfoButton = new JButton("Edit Information");
         editinfoButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        editinfoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Edit Info
+                ShowEditInfo(accountid, 1);
+            }
+        });
         contentPane.add(editinfoButton);
 
         JButton viewappointmentsButton = new JButton("View Appointments");
@@ -498,32 +517,22 @@ public class WindowManager extends JFrame {
         contentPane.repaint();
     }
 
-    public void ReturnToCurrentDashboard(){
-
-    }
-
-    //endregion
-
-    //Edit this method only!
-    public void ShowTest(){
-        //Clear old content pane
-        contentPane.removeAll();
-
-        //Apply changes to content panel
-        //Change stuff in here, not the other functions in this method
-        //Test Label
-        JLabel testLabel = new JLabel("sample text");
-        testLabel.setBounds(contentPane.getWidth() / 2 - 100, contentPane.getHeight() / 2, 100, 25);
-        contentPane.add(testLabel);
-
-        //Test field
-        JTextField testField = new JTextField();
-        testField.setBounds(contentPane.getWidth() / 2, contentPane.getHeight() / 2, 116, 20);
-        contentPane.add(testField);
-        //
-
-        //Reapply panel
-        contentPane.repaint();
-        contentPane.revalidate();
+    public void ReturnToCurrentDashboard(int accountid, int dashboardType){
+        switch(dashboardType){
+            case (0):
+                ShowPatientDashboard(accountid);
+                break;
+            case (1):
+                ShowDoctorDashboard(accountid);
+                break;
+            case(2):
+                //ShowNurseDashboard(accountid);
+                break;
+            case(3):
+                //ShowLabtechDashboard(accountid);
+                break;
+            default:
+                System.out.print("No dashboard of type:" + dashboardType);
+        }
     }
 }

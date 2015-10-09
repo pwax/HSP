@@ -16,7 +16,7 @@ public class GUITester {
         Scanner keyboard = new Scanner(System.in);
 
         //Write the WindowManager function here
-        windowManager.ShowTest();
+       // windowManager.ShowTest();
 
         //Enter anything in console to quit or just exit on JFrame
         keyboard.next();

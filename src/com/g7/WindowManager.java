@@ -31,6 +31,7 @@ public class WindowManager extends JFrame {
         contentPane.setLayout(null);
         setContentPane(contentPane);
         this.setVisible(true);
+        ShowLogin();
     }
 //endregion
 
@@ -43,32 +44,30 @@ public class WindowManager extends JFrame {
 
         //Apply changes to content panel
 
-        //Login Panel
-        JPanel loginPanel = new JPanel();
-        loginPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        loginPanel.setBackground(panelColor);
-        loginPanel.setLayout(null);
-        loginPanel.setBounds(contentPane.getWidth() / 2 - 150, contentPane.getHeight() / 2 - 100, 300, 200);
+        //Title
+        JLabel titleLabel = new JLabel("Patient Health Care System");
+        titleLabel.setBounds(contentPane.getWidth() / 2 - 75, contentPane.getHeight() / 2 - 100, 200, 14);
+        contentPane.add(titleLabel);
 
         //Username
         JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setBounds(loginPanel.getWidth() / 2 - 100, loginPanel.getHeight() / 2 - 60, 66, 14);
-        loginPanel.add(usernameLabel);
+        usernameLabel.setBounds(contentPane.getWidth() / 2 - 175, contentPane.getHeight() / 2 - 60, 66, 14);
+        contentPane.add(usernameLabel);
 
         JTextField usernameField = new JTextField();
-        usernameField.setBounds(loginPanel.getWidth() / 2 + 10, loginPanel.getHeight() / 2 - 60, 116, 20);
-        loginPanel.add(usernameField);
+        usernameField.setBounds(contentPane.getWidth() / 2 - 90, contentPane.getHeight() / 2 - 60, 216, 20);
+        contentPane.add(usernameField);
         //Not sure if necessary? Looked it up and tried without and it works fine and doesn't seem to effect anything
         //usernameField.setColumns(10);
 
         //Password
         JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(loginPanel.getWidth() / 2 - 100, loginPanel.getHeight() / 2 - 10, 66, 14);
-        loginPanel.add(passwordLabel);
+        passwordLabel.setBounds(contentPane.getWidth() / 2 - 175, contentPane.getHeight() / 2 - 10, 66, 14);
+        contentPane.add(passwordLabel);
 
         JTextField passwordField = new JTextField();
-        passwordField.setBounds(loginPanel.getWidth() / 2 + 10, loginPanel.getHeight() / 2 - 10, 116, 20);
-        loginPanel.add(passwordField);
+        passwordField.setBounds(contentPane.getWidth() / 2 - 90, contentPane.getHeight() / 2 - 10, 216, 20);
+        contentPane.add(passwordField);
         //Not sure if necessary? Looked it up and tried without and it works fine and doesn't seem to effect anything
         //passwordField.setColumns(10);
 
@@ -78,20 +77,38 @@ public class WindowManager extends JFrame {
                 ShowRegister();
             }
         });
-        registerButton.setBounds(loginPanel.getWidth() / 2 - 125, loginPanel.getHeight() / 2 + 50, 100, 25);
-        loginPanel.add(registerButton);
+        registerButton.setBounds((contentPane.getWidth() / 9) * 7, (contentPane.getHeight() / 7) * 6, 100, 25);
+        contentPane.add(registerButton);
+
+        JLabel invalidinputLabel = new JLabel("Invalid input, try again");
+        invalidinputLabel.setForeground(Color.RED);
+        invalidinputLabel.setBounds(contentPane.getWidth() / 2 - 60, contentPane.getHeight() / 2 + 25, 200, 14);
 
         JButton loginButton = new JButton("Login");
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Check correct input to login
-                //Then something like: ShowDashboard(AccountType)
+                switch (usernameField.getText()){
+                    case ("p"):
+                        ShowPatientDashboard();
+                        break;
+                    case ("d"):
+                        ShowDoctorDashboard();
+                        break;
+                    default:
+                        contentPane.remove(invalidinputLabel);
+
+                        contentPane.add(invalidinputLabel);
+
+                        //Reapply panel
+                        contentPane.repaint();
+                        contentPane.revalidate();
+                        break;
+                }
             }
         });
-        loginButton.setBounds(loginPanel.getWidth() / 2 + 25, loginPanel.getHeight() / 2 + 50, 100, 25);
-        loginPanel.add(loginButton);
-
-        contentPane.add(loginPanel);
+        loginButton.setBounds(contentPane.getWidth() / 2 - 50, contentPane.getHeight() / 2 + 50, 100, 25);
+        contentPane.add(loginButton);
 
         //Reapply panel
         contentPane.repaint();
@@ -106,91 +123,85 @@ public class WindowManager extends JFrame {
         contentPane.removeAll();
 
         //Apply changes to content pane
-        //Register Panel
-        JPanel registerPanel = new JPanel();
-        registerPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        registerPanel.setBackground(panelColor);
-        registerPanel.setLayout(null);
-        registerPanel.setBounds(contentPane.getWidth() / 2 - 200, contentPane.getHeight() / 2 - 225, 400, 450);
 
         //First name
         JLabel fnameLabel = new JLabel("First Name");
-        fnameLabel.setBounds(registerPanel.getWidth() / 2 - 140, registerPanel.getHeight() / 2 - 200, 140, 14);
-        registerPanel.add(fnameLabel);
+        fnameLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 200, 140, 14);
+        contentPane.add(fnameLabel);
 
         JTextField fnameField = new JTextField();
-        fnameField.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 - 200, 116, 20);
-        registerPanel.add(fnameField);
+        fnameField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 200, 116, 20);
+        contentPane.add(fnameField);
         fnameField.setColumns(10);
 
         //Last Name
         JLabel lnameLabel = new JLabel("Last Name");
-        lnameLabel.setBounds(registerPanel.getWidth() / 2 - 140, registerPanel.getHeight() / 2 - 160, 140, 14);
-        registerPanel.add(lnameLabel);
+        lnameLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 160, 140, 14);
+        contentPane.add(lnameLabel);
 
         JTextField lnameField = new JTextField();
-        lnameField.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 - 160, 116, 20);
-        registerPanel.add(lnameField);
+        lnameField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 160, 116, 20);
+        contentPane.add(lnameField);
         lnameField.setColumns(10);
 
         //Password
         JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(registerPanel.getWidth() / 2 - 140, registerPanel.getHeight() / 2 - 120, 140, 14);
-        registerPanel.add(passwordLabel);
+        passwordLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 120, 140, 14);
+        contentPane.add(passwordLabel);
 
         JTextField passwordField = new JPasswordField();
-        passwordField.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 - 120, 116, 20);
-        registerPanel.add(passwordField);
+        passwordField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 120, 116, 20);
+        contentPane.add(passwordField);
 
         //Confirm password
         JLabel confirmPasswordLabel = new JLabel("Confirm Password");
-        confirmPasswordLabel.setBounds(registerPanel.getWidth() / 2 - 140, registerPanel.getHeight() / 2 - 80, 140, 14);
-        registerPanel.add(confirmPasswordLabel);
+        confirmPasswordLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 80, 140, 14);
+        contentPane.add(confirmPasswordLabel);
 
         JTextField confirmPasswordField = new JPasswordField();
-        confirmPasswordField.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 - 80, 116, 20);
-        registerPanel.add(confirmPasswordField);
+        confirmPasswordField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 80, 116, 20);
+        contentPane.add(confirmPasswordField);
 
         //Email
         JLabel emailLabel = new JLabel("Email");
-        emailLabel.setBounds(registerPanel.getWidth() / 2 - 140, registerPanel.getHeight() / 2 - 40, 140, 14);
-        registerPanel.add(emailLabel);
+        emailLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 40, 140, 14);
+        contentPane.add(emailLabel);
 
         JTextField emailField = new JTextField();
-        emailField.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 - 40, 116, 20);
-        registerPanel.add(emailField);
+        emailField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 40, 116, 20);
+        contentPane.add(emailField);
         emailField.setColumns(10);
 
         //Phone
         JLabel phoneLabel = new JLabel("Phone");
-        phoneLabel.setBounds(registerPanel.getWidth() / 2 - 140, registerPanel.getHeight() / 2, 140, 14);
-        registerPanel.add(phoneLabel);
+        phoneLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2, 140, 14);
+        contentPane.add(phoneLabel);
 
         JTextField phoneField = new JTextField();
-        phoneField.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2, 116, 20);
-        registerPanel.add(phoneField);
+        phoneField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2, 116, 20);
+        contentPane.add(phoneField);
         phoneField.setColumns(10);
 
         //Account Type
         JLabel accountTypeLabel = new JLabel("Account Type:");
-        accountTypeLabel.setBounds(registerPanel.getWidth() / 2 - 140, registerPanel.getHeight() / 2 + 40, 140, 14);
-        registerPanel.add(accountTypeLabel);
-        
+        accountTypeLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 + 40, 140, 14);
+        contentPane.add(accountTypeLabel);
+
         JRadioButton patientRadioButton = new JRadioButton("Patient");
-        patientRadioButton.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 + 40, 116, 20);
-        registerPanel.add(patientRadioButton);
+        patientRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 40, 116, 20);
+        contentPane.add(patientRadioButton);
 
         JRadioButton doctorRadioButton = new JRadioButton("Doctor");
-        doctorRadioButton.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 + 70, 116, 20);
-        registerPanel.add(doctorRadioButton);
+        doctorRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 70, 116, 20);
+        contentPane.add(doctorRadioButton);
 
         JRadioButton nurseRadioButton = new JRadioButton("Nurse");
-        nurseRadioButton.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 + 100, 116, 20);
-        registerPanel.add(nurseRadioButton);
+        nurseRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 100, 116, 20);
+        contentPane.add(nurseRadioButton);
 
         JRadioButton labtechRadioButton = new JRadioButton("Lab Tech");
-        labtechRadioButton.setBounds(registerPanel.getWidth() / 2 + 10, registerPanel.getHeight() / 2 + 130, 116, 20);
-        registerPanel.add(labtechRadioButton);
+        labtechRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 130, 116, 20);
+        contentPane.add(labtechRadioButton);
 
         ButtonGroup accountTypeGroup = new ButtonGroup();
         accountTypeGroup.add(patientRadioButton);
@@ -205,8 +216,8 @@ public class WindowManager extends JFrame {
                 ShowLogin();
             }
         });
-        backButton.setBounds(registerPanel.getWidth() / 2 - 125, registerPanel.getHeight() / 2 + 175, 100, 25);
-        registerPanel.add(backButton);
+        backButton.setBounds(contentPane.getWidth() / 2 - 125, contentPane.getHeight() / 2 + 175, 100, 25);
+        contentPane.add(backButton);
 
         //Register button
         JButton registerButton = new JButton("Register");
@@ -216,10 +227,8 @@ public class WindowManager extends JFrame {
                 ShowLogin();
             }
         });
-        registerButton.setBounds(registerPanel.getWidth() / 2 + 25, registerPanel.getHeight() / 2 + 175, 100, 25);
-        registerPanel.add(registerButton);
-
-        contentPane.add(registerPanel);
+        registerButton.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 175, 100, 25);
+        contentPane.add(registerButton);
 
         //Reapply panel
         contentPane.repaint();
@@ -230,41 +239,207 @@ public class WindowManager extends JFrame {
     public void ShowPatientDashboard(){
         contentPane.removeAll();
 
-        JButton btnMedicalHistory = new JButton("Medical History");
-        btnMedicalHistory.setBounds(54, 184, 139, 23);
-        contentPane.add(btnMedicalHistory);
+        //Title
+        JLabel titleLabel = new JLabel("Patient Dashboard");
+        titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
+        contentPane.add(titleLabel);
 
-        JButton btnNewButton = new JButton("Update Medical Status");
-        btnNewButton.setBounds(264, 184, 139, 23);
-        contentPane.add(btnNewButton);
+        JButton editinfoButton = new JButton("Edit Information");
+        editinfoButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        editinfoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Edit Info
+                ShowEditInfo();
+            }
+        });
+        contentPane.add(editinfoButton);
 
-        JButton btnBookAppointment = new JButton("Book Appointment");
-        btnBookAppointment.setBounds(484, 184, 139, 23);
-        contentPane.add(btnBookAppointment);
+        JButton healthconditionButton = new JButton("Health Condition");
+        healthconditionButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        healthconditionButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Update Health Conditions
+                ShowHealthCondition();
+            }
+        });
+        contentPane.add(healthconditionButton);
 
-        JLabel lblNewLabel_1 = new JLabel("New label");
-        lblNewLabel_1.setIcon(new ImageIcon("C:\\Users\\gdasara1\\Desktop\\update 2.jpg"));
-        lblNewLabel_1.setBounds(264, 81, 139, 92);
-        contentPane.add(lblNewLabel_1);
+        JButton medicalhistoryButton = new JButton("Medical History");
+        medicalhistoryButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 2, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        medicalhistoryButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //MMedical History
+                ShowMedicalHistory();
+            }
+        });
+        contentPane.add(medicalhistoryButton);
 
-        JLabel lblNewLabel = new JLabel("");
-        lblNewLabel.setIcon(new ImageIcon("C:\\Users\\gdasara1\\Desktop\\medical history.jpg"));
-        lblNewLabel.setBounds(54, 81, 139, 92);
-        contentPane.add(lblNewLabel);
+        JButton scheduleappointmentButton = new JButton("Schedule Appointment");
+        scheduleappointmentButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 2, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        scheduleappointmentButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Schedule Appointment
+                ShowScheduleAppointment();
+            }
+        });
+        contentPane.add(scheduleappointmentButton);
 
-        JLabel lblNewLabel_2 = new JLabel("New label");
-        lblNewLabel_2.setIcon(new ImageIcon("C:\\Users\\gdasara1\\Desktop\\calender final2.png"));
-        lblNewLabel_2.setBounds(484, 81, 139, 92);
-        contentPane.add(lblNewLabel_2);
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBounds((contentPane.getWidth() / 9) * 7, (contentPane.getHeight() / 7) * 6, 100, 25);
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Logout
+                ShowLogin();
+            }
+        });
+        contentPane.add(logoutButton);
 
-        JLabel lblNewLabel_3 = new JLabel("     Click on Critical Alert to book appoinment immediately");
-        lblNewLabel_3.setBounds(205, 395, 280, 43);
-        contentPane.add(lblNewLabel_3);
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
 
-        JButton btnNewButton_1 = new JButton("New button");
-        btnNewButton_1.setIcon(new ImageIcon("C:\\Users\\gdasara1\\Desktop\\critical.jpg"));
-        btnNewButton_1.setBounds(201, 285, 298, 99);
-        contentPane.add(btnNewButton_1);
+    //Show Edit Info page
+    public void ShowEditInfo(){
+        contentPane.removeAll();
+
+        //First name
+        JLabel fnameLabel = new JLabel("First Name");
+        fnameLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 200, 140, 14);
+        contentPane.add(fnameLabel);
+
+        JTextField fnameField = new JTextField();
+        fnameField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 200, 116, 20);
+        contentPane.add(fnameField);
+        fnameField.setColumns(10);
+
+        //Last Name
+        JLabel lnameLabel = new JLabel("Last Name");
+        lnameLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 160, 140, 14);
+        contentPane.add(lnameLabel);
+
+        JTextField lnameField = new JTextField();
+        lnameField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 160, 116, 20);
+        contentPane.add(lnameField);
+        lnameField.setColumns(10);
+
+        //Password
+        JLabel passwordLabel = new JLabel("Password");
+        passwordLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 120, 140, 14);
+        contentPane.add(passwordLabel);
+
+        JTextField passwordField = new JPasswordField();
+        passwordField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 120, 116, 20);
+        contentPane.add(passwordField);
+
+        //Confirm password
+        JLabel confirmPasswordLabel = new JLabel("Confirm Password");
+        confirmPasswordLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 80, 140, 14);
+        contentPane.add(confirmPasswordLabel);
+
+        JTextField confirmPasswordField = new JPasswordField();
+        confirmPasswordField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 80, 116, 20);
+        contentPane.add(confirmPasswordField);
+
+        //Email
+        JLabel emailLabel = new JLabel("Email");
+        emailLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 40, 140, 14);
+        contentPane.add(emailLabel);
+
+        JTextField emailField = new JTextField();
+        emailField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 40, 116, 20);
+        contentPane.add(emailField);
+        emailField.setColumns(10);
+
+        //Phone
+        JLabel phoneLabel = new JLabel("Phone");
+        phoneLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2, 140, 14);
+        contentPane.add(phoneLabel);
+
+        JTextField phoneField = new JTextField();
+        phoneField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2, 116, 20);
+        contentPane.add(phoneField);
+        phoneField.setColumns(10);
+
+        //Account Type
+        JLabel accountTypeLabel = new JLabel("Account Type:");
+        accountTypeLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 + 40, 140, 14);
+        contentPane.add(accountTypeLabel);
+
+        JRadioButton patientRadioButton = new JRadioButton("Patient");
+        patientRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 40, 116, 20);
+        contentPane.add(patientRadioButton);
+
+        JRadioButton doctorRadioButton = new JRadioButton("Doctor");
+        doctorRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 70, 116, 20);
+        contentPane.add(doctorRadioButton);
+
+        JRadioButton nurseRadioButton = new JRadioButton("Nurse");
+        nurseRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 100, 116, 20);
+        contentPane.add(nurseRadioButton);
+
+        JRadioButton labtechRadioButton = new JRadioButton("Lab Tech");
+        labtechRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 130, 116, 20);
+        contentPane.add(labtechRadioButton);
+
+        ButtonGroup accountTypeGroup = new ButtonGroup();
+        accountTypeGroup.add(patientRadioButton);
+        accountTypeGroup.add(doctorRadioButton);
+        accountTypeGroup.add(nurseRadioButton);
+        accountTypeGroup.add(labtechRadioButton);
+
+        //Back button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Return to dashboard
+                ReturnToCurrentDashboard();
+            }
+        });
+        backButton.setBounds((contentPane.getWidth() / 9) * 1, (contentPane.getHeight() / 7) * 6, 100, 25);
+        contentPane.add(backButton);
+
+        //Accept Changes
+        JButton acceptButton = new JButton("Accept");
+        acceptButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Save changes
+
+                //Return to patient page
+                ShowPatientDashboard();
+            }
+        });
+        acceptButton.setBounds((contentPane.getWidth() / 9) * 7, (contentPane.getHeight() / 7) * 6, 100, 25);
+        contentPane.add(acceptButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Health Condition page
+    public void ShowHealthCondition(){
+        contentPane.removeAll();
+
+
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Medical History page
+    public void ShowMedicalHistory(){
+        contentPane.removeAll();
+
+
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Schedule Appointment page
+    public void ShowScheduleAppointment(){
+        contentPane.removeAll();
+
+
 
         contentPane.revalidate();
         contentPane.repaint();
@@ -272,8 +447,43 @@ public class WindowManager extends JFrame {
 
     //Show Doctor Dashboard
     public void ShowDoctorDashboard(){
+        contentPane.removeAll();
+
+        //Title
+        JLabel titleLabel = new JLabel("Doctor Dashboard");
+        titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
+        contentPane.add(titleLabel);
+
+        JButton editinfoButton = new JButton("Edit Information");
+        editinfoButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        contentPane.add(editinfoButton);
+
+        JButton viewappointmentsButton = new JButton("View Appointments");
+        viewappointmentsButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        contentPane.add(viewappointmentsButton);
+
+        JButton patientsearchButton = new JButton("Patient Search");
+        patientsearchButton.setBounds((contentPane.getWidth() / 2) + 50 - (contentPane.getWidth() / 4), (contentPane.getHeight() / 4) * 2, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        contentPane.add(patientsearchButton);
+
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBounds((contentPane.getWidth() / 9) * 7, (contentPane.getHeight() / 7) * 6, 100, 25);
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Logout
+                ShowLogin();
+            }
+        });
+        contentPane.add(logoutButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    public void ReturnToCurrentDashboard(){
 
     }
+
     //endregion
 
     //Edit this method only!
@@ -292,6 +502,7 @@ public class WindowManager extends JFrame {
         JTextField testField = new JTextField();
         testField.setBounds(contentPane.getWidth() / 2, contentPane.getHeight() / 2, 116, 20);
         contentPane.add(testField);
+        //
 
         //Reapply panel
         contentPane.repaint();

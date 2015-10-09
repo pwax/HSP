@@ -12,7 +12,7 @@ public class GUITester {
 
     public static void main(String[] args) throws Exception{
 
-        BackEndManager.sharedManager()
+
 
 
         WindowManager windowManager = new WindowManager();

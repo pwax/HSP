@@ -7,6 +7,7 @@ import java.awt.*;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.xml.crypto.Data;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -224,7 +225,24 @@ public class WindowManager extends JFrame {
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Apply register check and completion here
-                ShowLogin();
+               // ShowLogin();
+                System.out.println("registering new user...");
+
+                String firstName = fnameField.getText();
+                String lastName = lnameField.getText();
+                String password = passwordField.getText();
+                String email = emailField.getText();
+                String phoneNumber = phoneField.getText();
+
+
+
+
+//                try {
+//                    BackEndManager.sharedManager().registerNewUser();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+
             }
         });
         registerButton.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 175, 100, 25);

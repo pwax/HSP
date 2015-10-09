@@ -60,5 +60,25 @@ public class BackEndManager {
     }
 
 
+    //--SQL calls----------
+
+    public void registerNewUser(String firstName, String lastName, String password, String email, String phoneNumber, int accountType){
+
+        if (firstName != null && lastName != null && password != null && email != null && phoneNumber != null){
+            //begin sql calls
+
+
+
+
+        }else{
+            System.out.println("Missing something from registration");
+        }
+
+
+
+    }
+
+
+
 
 }

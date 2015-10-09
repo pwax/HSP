@@ -36,9 +36,6 @@ public class DataManager {
 
         System.out.println("inserting records into table");
 
-        //Statement statement = getConnection().createStatement();
-
-        //String sql = "INSERT INTO tUsers " + "Values (" + fir
 
     }
 

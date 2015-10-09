@@ -12,7 +12,8 @@ public class GUITester {
 
     public static void main(String[] args) throws Exception{
 
-        DataManager.getConnection();
+        BackEndManager.sharedManager()
+
 
         WindowManager windowManager = new WindowManager();
 

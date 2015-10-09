@@ -224,6 +224,7 @@ public class WindowManager extends JFrame {
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
+
                 int accountType;
 
                 //Check current state of radio buttons
@@ -237,24 +238,29 @@ public class WindowManager extends JFrame {
                     accountType = 3;
                 }
 
-                //Apply register check and completion here
-               // ShowLogin();
-                System.out.println("registering new user...");
-
                 String firstName = fnameField.getText();
                 String lastName = lnameField.getText();
+
                 String password = passwordField.getText();
+                String verifyPassword = confirmPasswordField.getText();
+
                 String email = emailField.getText();
                 String phoneNumber = phoneField.getText();
 
+                if (password.compareTo(verifyPassword) == 0){
+
+                    System.out.println("registering new user...");
+
+                    try {
+                        BackEndManager.sharedManager().registerNewUser(firstName, lastName, password, email, phoneNumber, accountType);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    System.out.println("passwords don't match");
+                }
 
 
-
-//                try {
-//                    BackEndManager.sharedManager().registerNewUser();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
 
             }
         });

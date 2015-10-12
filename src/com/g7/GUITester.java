@@ -12,10 +12,6 @@ public class GUITester {
 
     public static void main(String[] args) throws Exception{
 
-        Appointment appointment = new Appointment(10, "I need help!");
-        BackEndManager.sharedManager().createAppointment(appointment);
-
-
         WindowManager windowManager = new WindowManager();
 
         Scanner keyboard = new Scanner(System.in);
@@ -26,9 +22,6 @@ public class GUITester {
         //Enter anything in console to quit or just exit on JFrame
         keyboard.next();
         System.exit(0);
-
-
-
 
     }
 }

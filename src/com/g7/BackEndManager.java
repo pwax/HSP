@@ -277,6 +277,8 @@ public class BackEndManager {
                         HealthCareConditionEntry entry = new HealthCareConditionEntry(userID, info);
 
                         entries[i] = entry;
+                        entrySet.next();
+
                     }
                 }
 
@@ -325,11 +327,13 @@ public class BackEndManager {
                         int userIDFromServer = appointmentSet.getInt("userID");
                         String info = appointmentSet.getString("info");
 
-                        System.out.println(userIDFromServer + " " + info);
+                        System.out.println(userIDFromServer + " " + info );
 
                         Appointment appointment = new Appointment(userID, info);
 
                         appointments[i] = appointment;
+                        appointmentSet.next();
+
                     }
                 }
 

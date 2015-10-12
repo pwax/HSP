@@ -91,13 +91,35 @@ public class WindowManager extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Check correct input to login
+                boolean userexists = false;
+                try {
+                    userexists = BackEndManager.sharedManager().doesUserExist(usernameField.getText());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                if(true){//usernameExists){
-                    if(true){//passwordWorks){
-                        //Get ID TODO
+                if(userexists){//usernameExists){
+                    boolean passwordMatches = false;
+                    try {
+                        passwordMatches = BackEndManager.sharedManager().isPassword(usernameField.getText(),passwordField.getText());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if(passwordMatches){//passwordWorks){
+                        //Get ID
                         int id = 0;
-                        //Get account type TODO
+                        try {
+                            id = BackEndManager.sharedManager().getUserID(usernameField.getText());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        //Get account type
                         int accountType = 0;
+                        try {
+                            accountType = BackEndManager.sharedManager().getDashboardType(id);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         //Show dashboard
                         ReturnToCurrentDashboard(id, accountType);
                     }else{
@@ -362,15 +384,20 @@ public class WindowManager extends JFrame {
                     if((accountType != 0) || (ssnField.getText().length() == 10 && insuranceField.getText().compareTo("") != 0)) {
                         if (confirmPasswordField.getText().compareTo(passwordField.getText()) == 0) {
                             //Check username doesn't already exist
-                            //TODO change to be function for looking up if name exists
-                            if (usernameField.getText().compareTo("0") != 0) {
-                                //Create new account
-                                //TODO input into database
+                            boolean alreadyExists = false;
 
-                                if(accountType == 0){
-                                    //Create Patient
-                                }else{
-                                    //Create Other
+                            try {
+                                alreadyExists = BackEndManager.sharedManager().doesUserExist(usernameField.getText());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (!alreadyExists) {
+                                //Create new account
+
+                                try {
+                                    BackEndManager.sharedManager().registerNewUser(fnameField.getText(),lnameField.getText(),usernameField.getText(),passwordField.getText(),emailField.getText(),phoneField.getText(),accountType,ssnField.getText(),insuranceField.getText(),medHistoryTextArea.getText());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
 
                                 //Return to login page
@@ -676,11 +703,13 @@ public class WindowManager extends JFrame {
         contentPane.add(historyLabel);
 
         //Condition History Scrollpane
-        //TODO get actual history entries
-        int conditionEntries = test;
-
-        //String[] entries = DATABASE ENTRY LIST;
-        //int conditionEntries = entries.length();
+        HealthCareConditionEntry[] entries = new HealthCareConditionEntry[0];
+        try {
+            entries = BackEndManager.sharedManager().getHealthConditionEntries(accountid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        int conditionEntries = entries.length;
 
         //Create inner grid pane
         JPanel gridPane;
@@ -702,8 +731,7 @@ public class WindowManager extends JFrame {
 
             //TODO get appointment info of Date Time Issue and Severity
             JTextArea entryArea = new JTextArea(2, 20);
-            entryArea.setText("Date: 10/09\tTime: 8:42 PM\n" +
-                    "Issue: Burn\tSeverity: 4");
+            entryArea.setText(entries[i].info);
             //entryArea.setText(entries[i]);
             entryArea.setWrapStyleWord(true);
             entryArea.setLineWrap(true);
@@ -806,11 +834,13 @@ public class WindowManager extends JFrame {
     public void ShowAppointments(int accountid, int dashboardType){
         contentPane.removeAll();
 
-        //TODO get actual appointments set currently
-        int appointmentCount = test;
-
-        //String[] appointmentInfos = DATABASE GET APPOINTMENTS
-        //int appointmentCount = appointmentInfos.length();
+        Appointment[] appointments = new Appointment[0];
+        try {
+            appointments = BackEndManager.sharedManager().getAppointmentList(accountid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        int appointmentCount = appointments.length;
 
         //Create inner grid pane
         JPanel gridPane;
@@ -832,7 +862,7 @@ public class WindowManager extends JFrame {
 
             //TODO get appointment info of Date Time and Doc name
             JTextArea entryArea = new JTextArea(2, 20);
-            entryArea.setText("Date: 09/10\nTime: 11:00 PM\n\nDoctor: Curtis");
+            entryArea.setText(appointments[i].info);
             //entryArea.setText(appointmentInfos[i]);
             entryArea.setWrapStyleWord(true);
             entryArea.setLineWrap(true);

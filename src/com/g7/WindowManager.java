@@ -10,6 +10,10 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Window class used to display all GUI
@@ -22,7 +26,7 @@ public class WindowManager extends JFrame {
     private Color panelColor = new Color(228,255,214);
 
     //DEBUG
-    private int test = 2;
+    private int test = 0;
 
     //Creates main window
     public WindowManager(){
@@ -66,7 +70,7 @@ public class WindowManager extends JFrame {
         passwordLabel.setBounds(contentPane.getWidth() / 2 - 175, contentPane.getHeight() / 2 - 10, 66, 14);
         contentPane.add(passwordLabel);
 
-        JTextField passwordField = new JTextField();
+        JTextField passwordField = new JPasswordField();
         passwordField.setBounds(contentPane.getWidth() / 2 - 90, contentPane.getHeight() / 2 - 10, 216, 20);
         contentPane.add(passwordField);
 
@@ -87,13 +91,35 @@ public class WindowManager extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Check correct input to login
+                boolean userexists = false;
+                try {
+                    userexists = BackEndManager.sharedManager().doesUserExist(usernameField.getText());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                if(true){//usernameExists){
-                    if(true){//passwordWorks){
-                        //Get ID TODO
+                if(userexists){//usernameExists){
+                    boolean passwordMatches = false;
+                    try {
+                        passwordMatches = BackEndManager.sharedManager().isPassword(usernameField.getText(),passwordField.getText());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if(passwordMatches){//passwordWorks){
+                        //Get ID
                         int id = 0;
-                        //Get account type TODO
+                        try {
+                            id = BackEndManager.sharedManager().getUserID(usernameField.getText());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        //Get account type
                         int accountType = 0;
+                        try {
+                            accountType = BackEndManager.sharedManager().getDashboardType(id);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         //Show dashboard
                         ReturnToCurrentDashboard(id, accountType);
                     }else{
@@ -316,10 +342,12 @@ public class WindowManager extends JFrame {
         //Register button
 
         JLabel emptyFieldsLabel = new JLabel("Some fields remain unfilled");
-        emptyFieldsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 140, 100, 30);
+        emptyFieldsLabel.setForeground(Color.RED);
+        emptyFieldsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 210, 200, 30);
 
-        JLabel inconsistentPasswordsLabel = new JLabel("Both passwords ");
-        inconsistentPasswordsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 140, 100, 30);
+        JLabel inconsistentPasswordsLabel = new JLabel("Both passwords don't match");
+        inconsistentPasswordsLabel.setForeground(Color.RED);
+        inconsistentPasswordsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 210, 200, 30);
         
         JLabel usernameInUseLabel = new JLabel("Username already in use");
         usernameInUseLabel.setForeground(Color.RED);
@@ -356,15 +384,20 @@ public class WindowManager extends JFrame {
                     if((accountType != 0) || (ssnField.getText().length() == 10 && insuranceField.getText().compareTo("") != 0)) {
                         if (confirmPasswordField.getText().compareTo(passwordField.getText()) == 0) {
                             //Check username doesn't already exist
-                            //TODO change to be function for looking up if name exists
-                            if (usernameField.getText().compareTo("0") != 0) {
-                                //Create new account
-                                //TODO input into database
+                            boolean alreadyExists = false;
 
-                                if(accountType == 0){
-                                    //Create Patient
-                                }else{
-                                    //Create Other
+                            try {
+                                alreadyExists = BackEndManager.sharedManager().doesUserExist(usernameField.getText());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (!alreadyExists) {
+                                //Create new account
+
+                                try {
+                                    BackEndManager.sharedManager().registerNewUser(fnameField.getText(),lnameField.getText(),usernameField.getText(),passwordField.getText(),emailField.getText(),phoneField.getText(),accountType,ssnField.getText(),insuranceField.getText(),medHistoryTextArea.getText());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
 
                                 //Return to login page
@@ -670,47 +703,47 @@ public class WindowManager extends JFrame {
         contentPane.add(historyLabel);
 
         //Condition History Scrollpane
-        //TODO get actual history entries
-        int conditionEntries = test;
+        HealthCareConditionEntry[] entries;
+        int conditionEntries = 0;
+        try {
+            entries = BackEndManager.sharedManager().getHealthConditionEntries(accountid);
+            conditionEntries = entries.length;
 
-        //String[] entries = DATABASE ENTRY LIST;
-        //int conditionEntries = entries.length();
+            //Create inner grid pane
+            JPanel gridPane;
+            if(conditionEntries <= 8) {
+                gridPane = new JPanel(new GridLayout(9, 1));
+            }else {
+                gridPane = new JPanel(new GridLayout(conditionEntries, 1));
+            }
 
-        //Create inner grid pane
-        JPanel gridPane;
-        if(conditionEntries <= 8) {
-            gridPane = new JPanel(new GridLayout(9, 1));
-        }else {
-            gridPane = new JPanel(new GridLayout(conditionEntries, 1));
+            //Create JScrollpane
+            JScrollPane scrollPane = new JScrollPane(gridPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 + 20, contentPane.getHeight() / 6, contentPane.getWidth() / 2 - 40, 400);
+
+            for(int i=0; i < conditionEntries; i++) {
+
+                JPanel entryPane = new JPanel();
+                entryPane.setBackground(panelColor);
+                entryPane.setBorder(BorderFactory.createRaisedBevelBorder());
+
+                JTextArea entryArea = new JTextArea(2, 20);
+                entryArea.setText(entries[i].info);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                entryPane.add(entryArea);
+
+                gridPane.add(entryPane);
+            }
+
+            contentPane.add(scrollPane);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        //Create JScrollpane
-        JScrollPane scrollPane = new JScrollPane(gridPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setBounds(contentPane.getWidth() / 2 + 20, contentPane.getHeight() / 6, contentPane.getWidth() / 2 - 40, 400);
-
-        for(int i=0; i < conditionEntries; i++) {
-
-            JPanel entryPane = new JPanel();
-            entryPane.setBackground(panelColor);
-            entryPane.setBorder(BorderFactory.createRaisedBevelBorder());
-
-            //TODO get appointment info of Date Time Issue and Severity
-            JTextArea entryArea = new JTextArea(2, 20);
-            entryArea.setText("Date: 09/11\tTime: 8:53 AM\n" +
-                    "Issue: Death\tSeverity: infinity? 5?");
-            //entryArea.setText(entries[i]);
-            entryArea.setWrapStyleWord(true);
-            entryArea.setLineWrap(true);
-            entryArea.setOpaque(false);
-            entryArea.setEditable(false);
-            entryArea.setFocusable(false);
-            entryPane.add(entryArea);
-
-            gridPane.add(entryPane);
-        }
-
-        contentPane.add(scrollPane);
-
         //Back button
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
@@ -748,16 +781,14 @@ public class WindowManager extends JFrame {
                         severityNum = 5;
                     }
 
-                    //If ailment is one of serious issues OR severity is 4 or 5
-                    if(ailmentList.getSelectedIndex() < 7 || severityNum >= 4){
-                        //Send alert to HSP
-                        //TODO send alert
-
-                    }
-
                     //Create entry
-                    //TODO send to database
-                    test++;
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                    Calendar cal = Calendar.getInstance();
+                    try {
+                        BackEndManager.sharedManager().createHealthConditionEntry(new HealthCareConditionEntry(accountid,"Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     //Reshow page
                     ShowHealthCondition(accountid);
@@ -793,11 +824,11 @@ public class WindowManager extends JFrame {
     public void ShowAppointments(int accountid, int dashboardType){
         contentPane.removeAll();
 
-        //TODO get actual appointments set currently
-        int appointmentCount = test;
-
-        //String[] appointmentInfos = DATABASE GET APPOINTMENTS
-        //int appointmentCount = appointmentInfos.length();
+        Appointment[] appointments;
+        int appointmentCount;
+        try {
+            appointments = BackEndManager.sharedManager().getAppointmentList(accountid);
+            appointmentCount = appointments.length;
 
         //Create inner grid pane
         JPanel gridPane;
@@ -815,12 +846,10 @@ public class WindowManager extends JFrame {
             JPanel appointmentPane = new JPanel();
             appointmentPane.setBackground(panelColor);
             appointmentPane.setBorder(BorderFactory.createRaisedBevelBorder());
-            appointmentPane.setMinimumSize(new Dimension(scrollPane.getWidth(),370/5));
+            appointmentPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
 
-            //TODO get appointment info of Date Time and Doc name
             JTextArea entryArea = new JTextArea(2, 20);
-            entryArea.setText("Date: mm/dd\nTime: 8:00 PM\n\nDoctor: Dr.Doc Tor");
-            //entryArea.setText(appointmentInfos[i]);
+            entryArea.setText(appointments[i].info);
             entryArea.setWrapStyleWord(true);
             entryArea.setLineWrap(true);
             entryArea.setOpaque(false);
@@ -828,18 +857,15 @@ public class WindowManager extends JFrame {
             entryArea.setFocusable(false);
             appointmentPane.add(entryArea);
 
-            //TODO set appointment description to tooltip text
-            appointmentPane.setToolTipText("sample tooltip");
-
             JButton deleteAppointmentButton = new JButton("Delete");
             deleteAppointmentButton.setBounds(appointmentPane.getWidth() * 3 / 4, 0, appointmentPane.getWidth() / 4, appointmentPane.getHeight());
             deleteAppointmentButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
                     //Delete Appointment
-                    //TODO remove from database
-                    test++;
+
+
                     //Reload this window
-                    ShowAppointments(accountid,dashboardType);
+                    ShowAppointments(accountid, dashboardType);
                 }
             });
             appointmentPane.add(deleteAppointmentButton);
@@ -849,6 +875,9 @@ public class WindowManager extends JFrame {
 
         contentPane.add(scrollPane);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //Appointments Label
         JLabel labelAppointment = new JLabel("Appointments");
         labelAppointment.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 100, 50);
@@ -870,7 +899,7 @@ public class WindowManager extends JFrame {
         makeAppointmentButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 + 200, 150, 30);
         makeAppointmentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //Logout
+                //Show Make Appointment
                 ShowMakeAppointment(accountid, dashboardType);
             }
         });
@@ -884,56 +913,46 @@ public class WindowManager extends JFrame {
     public void ShowMakeAppointment(int accountid, int dashboardType){
         contentPane.removeAll();
 
-        JPanel aptPanel = new JPanel();
-        aptPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        aptPanel.setBackground(panelColor);
-        aptPanel.setLayout(null);
-        aptPanel.setBounds(contentPane.getWidth() / 2 - 300, contentPane.getHeight() / 2 - 225, 600, 450);
-
         JLabel datelabel = new JLabel("Select Date :");
-        datelabel.setBounds(185, 52, 100, 100);
+        datelabel.setBounds(185, 25, 100, 100);
         contentPane.add(datelabel);
 
         String[] day= {"Date","1", "2", "3", "4", "5","6","7","8","9","10","11","12","13","14","15"
                 ,"16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"};
         JComboBox dayscombobox = new JComboBox(day);
-        dayscombobox.setBounds(contentPane.getWidth() / 2 - 125, contentPane.getHeight() / 2 - 210, 100, 100);
+        dayscombobox.setBounds(contentPane.getWidth() / 2 - 125, contentPane.getHeight() / 2 - 210, 100, 50);
         contentPane.add(dayscombobox);
 
         String[] month = {"Month", "January", "February", "March", "April", "May","June"
                 ,"July","August","September","October","November","December"};
         JComboBox monthcombobox = new JComboBox(month);
-        monthcombobox.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 210, 100, 100);
+        monthcombobox.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 210, 100, 50);
         contentPane.add(monthcombobox);
 
         String[] year = {"Year","2015","2016","2017"};
         JComboBox yearcombobox = new JComboBox(year);
-        yearcombobox.setBounds(contentPane.getWidth() / 2 + 125, contentPane.getHeight() / 2 - 210, 100, 100);
+        yearcombobox.setBounds(contentPane.getWidth() / 2 + 125, contentPane.getHeight() / 2 - 210, 100, 50);
         contentPane.add(yearcombobox);
-
-        JLabel otherinfolabel = new JLabel("Brief Information:");
-        otherinfolabel.setBounds(155, 125, 200, 200);
-        contentPane.add(otherinfolabel);
 
         String[] time = {"Time","9 to 10","10 to 11","11 to 12", "12 to 1", "2 to 3", "3 to 4", "4 to 5"};
         JComboBox timecombobox = new JComboBox(time);
-        timecombobox.setBounds(contentPane.getWidth() / 2 -275 ,contentPane.getHeight() / 2 - 25, 200, 100);
+        timecombobox.setBounds(contentPane.getWidth() / 2 -275 ,contentPane.getHeight() / 2 - 25, 200,50);
         contentPane.add(timecombobox);
 
         //TODO get all doctor names based on availability
         String[] physicians = {"Physicians","Vimal", "Curtis", "Matus", "Bryan", "Ryan"};
         JComboBox physiciancombobox = new JComboBox(physicians);
-        physiciancombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 50,200,100);
+        physiciancombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 50,200,50);
         contentPane.add(physiciancombobox);
 
         //Arbitrary
         String[] insurance = {"Insurance Provider", "Aetna", "Aviva", "Life Saver", "Life Care"};
         JComboBox insurancecombobox = new JComboBox(insurance);
-        insurancecombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 125,200,100);
+        insurancecombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 125,200,50);
         contentPane.add(insurancecombobox);
 
         JLabel reasonlabel = new JLabel("Reason For Visit:");
-        reasonlabel.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 50, 200, 200);
+        reasonlabel.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 125, 200, 200);
         contentPane.add(reasonlabel);
 
         JTextArea reasonTextArea = new JTextArea();
@@ -955,18 +974,32 @@ public class WindowManager extends JFrame {
 
         contentPane.add(backButton);
 
-        //Create Button
+        //Make Button
+        JLabel emptyFields = new JLabel("Some fields are empty");
+        emptyFields.setForeground(Color.RED);
+        emptyFields.setBounds(contentPane.getWidth() / 2, contentPane.getHeight()/2 + 225, 200, 20);
+
         JButton makeButton = new JButton("Make");
         makeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Check if all fields are selected
-                if(true){
+                if(dayscombobox.getSelectedIndex() != 0 && monthcombobox.getSelectedIndex() != 0 && yearcombobox.getSelectedIndex() != 0 && physiciancombobox.getSelectedIndex() !=0 && timecombobox.getSelectedIndex() != 0 && insurancecombobox.getSelectedIndex() != 0){
                     //Create appointment
                     //TODO add appointment to database
+                    try {
+                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid,new String("Date: " + year[yearcombobox.getSelectedIndex()] + "/" + month[monthcombobox.getSelectedIndex()] + "/" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\n\nDoctor: " + physicians[physiciancombobox.getSelectedIndex()])));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     //return to appointments list
                     ShowAppointments(accountid, dashboardType);
                 }else{
+                    //Print Error: Empty fields
+                    contentPane.add(emptyFields);
 
+                    contentPane.repaint();
+                    contentPane.revalidate();
                 }
             }
         });

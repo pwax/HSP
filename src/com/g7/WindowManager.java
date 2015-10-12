@@ -703,48 +703,47 @@ public class WindowManager extends JFrame {
         contentPane.add(historyLabel);
 
         //Condition History Scrollpane
-        HealthCareConditionEntry[] entries = new HealthCareConditionEntry[0];
+        HealthCareConditionEntry[] entries;
+        int conditionEntries = 0;
         try {
             entries = BackEndManager.sharedManager().getHealthConditionEntries(accountid);
+            conditionEntries = entries.length;
+
+            //Create inner grid pane
+            JPanel gridPane;
+            if(conditionEntries <= 8) {
+                gridPane = new JPanel(new GridLayout(9, 1));
+            }else {
+                gridPane = new JPanel(new GridLayout(conditionEntries, 1));
+            }
+
+            //Create JScrollpane
+            JScrollPane scrollPane = new JScrollPane(gridPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 + 20, contentPane.getHeight() / 6, contentPane.getWidth() / 2 - 40, 400);
+
+            for(int i=0; i < conditionEntries; i++) {
+
+                JPanel entryPane = new JPanel();
+                entryPane.setBackground(panelColor);
+                entryPane.setBorder(BorderFactory.createRaisedBevelBorder());
+
+                JTextArea entryArea = new JTextArea(2, 20);
+                entryArea.setText(entries[i].info);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                entryPane.add(entryArea);
+
+                gridPane.add(entryPane);
+            }
+
+            contentPane.add(scrollPane);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        int conditionEntries = entries.length;
-
-        //Create inner grid pane
-        JPanel gridPane;
-        if(conditionEntries <= 8) {
-            gridPane = new JPanel(new GridLayout(9, 1));
-        }else {
-            gridPane = new JPanel(new GridLayout(conditionEntries, 1));
-        }
-
-        //Create JScrollpane
-        JScrollPane scrollPane = new JScrollPane(gridPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setBounds(contentPane.getWidth() / 2 + 20, contentPane.getHeight() / 6, contentPane.getWidth() / 2 - 40, 400);
-
-        for(int i=0; i < conditionEntries; i++) {
-
-            JPanel entryPane = new JPanel();
-            entryPane.setBackground(panelColor);
-            entryPane.setBorder(BorderFactory.createRaisedBevelBorder());
-
-            //TODO get appointment info of Date Time Issue and Severity
-            JTextArea entryArea = new JTextArea(2, 20);
-            entryArea.setText(entries[i].info);
-            //entryArea.setText(entries[i]);
-            entryArea.setWrapStyleWord(true);
-            entryArea.setLineWrap(true);
-            entryArea.setOpaque(false);
-            entryArea.setEditable(false);
-            entryArea.setFocusable(false);
-            entryPane.add(entryArea);
-
-            gridPane.add(entryPane);
-        }
-
-        contentPane.add(scrollPane);
-
         //Back button
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
@@ -782,20 +781,11 @@ public class WindowManager extends JFrame {
                         severityNum = 5;
                     }
 
-                    //If ailment is one of serious issues OR severity is 4 or 5
-                    if(ailmentList.getSelectedIndex() < 7 || severityNum >= 4){
-                        //Send alert to HSP
-                        //TODO send alert to doctor
-
-                    }
-
                     //Create entry
-                    //TODO send to database
-                    test++;
                     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                     Calendar cal = Calendar.getInstance();
                     try {
-                        BackEndManager.sharedManager().createHealthConditionEntry("Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum, accountid);
+                        BackEndManager.sharedManager().createHealthConditionEntry(new HealthCareConditionEntry(accountid,"Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -834,13 +824,11 @@ public class WindowManager extends JFrame {
     public void ShowAppointments(int accountid, int dashboardType){
         contentPane.removeAll();
 
-        Appointment[] appointments = new Appointment[0];
+        Appointment[] appointments;
+        int appointmentCount;
         try {
             appointments = BackEndManager.sharedManager().getAppointmentList(accountid);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        int appointmentCount = appointments.length;
+            appointmentCount = appointments.length;
 
         //Create inner grid pane
         JPanel gridPane;
@@ -860,10 +848,8 @@ public class WindowManager extends JFrame {
             appointmentPane.setBorder(BorderFactory.createRaisedBevelBorder());
             appointmentPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
 
-            //TODO get appointment info of Date Time and Doc name
             JTextArea entryArea = new JTextArea(2, 20);
             entryArea.setText(appointments[i].info);
-            //entryArea.setText(appointmentInfos[i]);
             entryArea.setWrapStyleWord(true);
             entryArea.setLineWrap(true);
             entryArea.setOpaque(false);
@@ -876,10 +862,10 @@ public class WindowManager extends JFrame {
             deleteAppointmentButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
                     //Delete Appointment
-                    //TODO remove from database
-                    test++;
+
+
                     //Reload this window
-                    ShowAppointments(accountid,dashboardType);
+                    ShowAppointments(accountid, dashboardType);
                 }
             });
             appointmentPane.add(deleteAppointmentButton);
@@ -889,6 +875,9 @@ public class WindowManager extends JFrame {
 
         contentPane.add(scrollPane);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         //Appointments Label
         JLabel labelAppointment = new JLabel("Appointments");
         labelAppointment.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 100, 50);

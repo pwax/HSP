@@ -6,6 +6,7 @@ package com.g7;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
+import java.security.interfaces.RSAKey;
 import java.sql.*;
 
 public class BackEndManager {
@@ -89,7 +90,7 @@ public class BackEndManager {
 
     //--SQL calls----------
 
-    public void registerNewUser(String firstName, String lastName, String username, String password, String email, String phoneNumber, int accountType){
+    public void registerNewUser(String firstName, String lastName, String username, String password, String email, String phoneNumber, int accountType, String ssn, String insuranceProvider, String medicalHistory){
 
 
         if (firstName != null && lastName != null && password != null && email != null && phoneNumber != null){
@@ -100,7 +101,7 @@ public class BackEndManager {
 
                 String sql = "INSERT INTO Users " +
                         "VALUES ("+
-                        "0, " + "'"+firstName+"', "+ "'"+lastName+"', "+ "'"+username+"', "+ "'"+password+"', "+ "'"+email+"', "+ "'"+phoneNumber+"', "+ accountType+")";
+                        "0, " + "'"+firstName+"', "+ "'"+lastName+"', "+ "'"+username+"', "+ "'"+password+"', "+ "'"+email+"', "+ "'"+phoneNumber+"', "+ accountType+", '"+ssn+"', "+"'"+insuranceProvider+"', "+ "'"+medicalHistory+"'"+")";
                 System.out.println(sql);
 
                 Connection userConnection = getUserConnection();
@@ -240,24 +241,123 @@ public class BackEndManager {
         }
 
     }
-//
-//    public String[] getHealthConditionEntries(int userID){
-//
-//        //Return all strings of the given user's healthCondition list
-//    }
-//
-//    public Appointment[] getAppointmentList(int userID){
-//
-//        //Return all strings of the given user's appointment list
-//
-//
-//    }
+
+    public HealthCareConditionEntry[] getHealthConditionEntries(int userID){
+
+        //Return all hcc entries of the given user's hcc entries
+
+        HealthCareConditionEntry[] entries;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting health care entries");
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM HealthCareConditions WHERE userID = "+"'"+userID+"'";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+                System.out.println(count +" hcc entires");
+
+                entries = new HealthCareConditionEntry[count];
+
+                String sql = "SELECT id, userID, info FROM HealthCareConditions WHERE userID = "+"'"+userID+"'";
+
+                ResultSet entrySet = statement.executeQuery(sql);
+
+                if (entrySet.next()) {
+
+                    for (int i = 0; i < count; i++) {
+                        int userIDFromServer = entrySet.getInt("userID");
+                        String info = entrySet.getString("info");
+
+                        System.out.println(userIDFromServer + " " + info);
+
+                        HealthCareConditionEntry entry = new HealthCareConditionEntry(userID, info);
+
+                        entries[i] = entry;
+                    }
+                }
+
+
+            }else {
+                System.out.println("no appointments");
+                entries = null;
+            }
+
+            return entries;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            entries = null;
+            return entries;
+        }
+    }
+
+    public Appointment[] getAppointmentList(int userID){
+
+        //Return all appointments of the given user's appointment list
+
+        Appointment[] appointments;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting appointments");
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Appointments WHERE userID = "+"'"+userID+"'";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+                System.out.println(count +" appointments");
+
+                appointments = new Appointment[count];
+
+                String sql = "SELECT id, userID, info FROM Appointments WHERE userID = "+"'"+userID+"'";
+
+                ResultSet appointmentSet = statement.executeQuery(sql);
+
+                if (appointmentSet.next()) {
+
+                    for (int i = 0; i < count; i++) {
+                        int userIDFromServer = appointmentSet.getInt("userID");
+                        String info = appointmentSet.getString("info");
+
+                        System.out.println(userIDFromServer + " " + info);
+
+                        Appointment appointment = new Appointment(userID, info);
+
+                        appointments[i] = appointment;
+                    }
+                }
+
+
+            }else {
+                System.out.println("no appointments");
+                appointments = null;
+            }
+
+            return appointments;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            appointments = null;
+            return appointments;
+        }
+
+
+    }
 
     public void createHealthConditionEntry(String info, int userID){
 
     }
 
-    public void createAppointment(String appointmentInfo, int userID){
+    public void createAppointment(Appointment appointment){
+
+
+
 
     }
 

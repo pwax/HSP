@@ -12,6 +12,8 @@ public class GUITester {
 
     public static void main(String[] args) throws Exception{
 
+        HealthCareConditionEntry[] appointments = BackEndManager.sharedManager().getHealthConditionEntries(10);
+        System.out.println(appointments.length);
 
 
         WindowManager windowManager = new WindowManager();

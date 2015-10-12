@@ -14,7 +14,6 @@ public class GUITester {
 
 
 
-
         WindowManager windowManager = new WindowManager();
 
         Scanner keyboard = new Scanner(System.in);

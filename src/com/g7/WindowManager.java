@@ -91,6 +91,7 @@ public class WindowManager extends JFrame {
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Check correct input to login
+
                 switch (usernameField.getText()){
                     case ("p"):
                         ShowPatientDashboard(1);
@@ -309,10 +310,21 @@ public class WindowManager extends JFrame {
                 if(fnameField.getText() != null && lnameField.getText() != null && usernameField.getText() != null && passwordField.getText() != null && confirmPasswordField.getText() != null && emailField.getText() != null && phoneField.getText() != null){
                     if(confirmPasswordField.getText().compareTo(passwordField.getText()) == 0){
                         //Check username doesn't already exist
-                        //if(!usernameField.getText().compareTo("0") == 0){
-                            //Create new account
+                        try{
+                            if (BackEndManager.sharedManager().doesUserExist(usernameField.getText())){
+                                //user name already exists
 
-                            //Return to login page
+                            }else{
+                                try {
+                                    BackEndManager.sharedManager().registerNewUser(fnameField.getText(), lnameField.getText(), usernameField.getText(), passwordField.getText(), emailField.getText(), phoneField.getText(), accountType);
+                                } catch (Exception e) {e.printStackTrace();}
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                        //Return to login page
                         //}
                     }else{
                         //Print Error: Passwords not matching
@@ -322,6 +334,9 @@ public class WindowManager extends JFrame {
                 }
 
                 //Apply register check and completion here
+
+
+
                 ShowLogin();
             }
         });
@@ -589,7 +604,7 @@ public class WindowManager extends JFrame {
         contentPane.add(historyLabel);
 
         //Condition History Scrollpane
-        //TODO get actual history entries currently
+        //TODO get actual history entries
         int conditionEntries = test;
 
         //Create inner grid pane

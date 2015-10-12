@@ -350,14 +350,53 @@ public class BackEndManager {
 
     }
 
-    public void createHealthConditionEntry(String info, int userID){
+    public void createHealthConditionEntry(HealthCareConditionEntry entry){
+
+        try {
+            System.out.println("inserting records into user table");
+
+            int userID = entry.userID;
+            String info = entry.info;
+
+            String sql = "INSERT INTO HealthCareConditions " +
+                    "VALUES ('0',"+ "'"+userID+"', "+"'"+info+"'" +")";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+
+
+        }catch (Exception e){
+            System.out.println("failed to insert records with error: ");
+            e.printStackTrace();
+        }
 
     }
 
     public void createAppointment(Appointment appointment){
 
+        try {
+            System.out.println("inserting records into user table");
+
+            int userID = appointment.userID;
+            String info = appointment.info;
+
+            String sql = "INSERT INTO Appointments " +
+                    "VALUES ('0',"+ "'"+userID+"', "+"'"+info+"'" +")";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
 
 
+        }catch (Exception e){
+            System.out.println("failed to insert records with error: ");
+            e.printStackTrace();
+        }
 
     }
 

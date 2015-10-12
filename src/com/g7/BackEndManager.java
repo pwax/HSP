@@ -257,7 +257,7 @@ public class BackEndManager {
 
     }
 
-    public void createAppointment(String appointmentInfo, int userID){
+    public void createAppointment(Appointment appointment){
 
     }
 
@@ -284,15 +284,10 @@ public class BackEndManager {
                 System.out.println("no account type for such id");
                 accountType = -1;
             }
-
         }catch (Exception e){
             e.printStackTrace();
             accountType = -1;
         }
-
         return accountType;
     }
-
-
-
 }

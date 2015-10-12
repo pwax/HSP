@@ -10,6 +10,10 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Window class used to display all GUI
@@ -22,7 +26,7 @@ public class WindowManager extends JFrame {
     private Color panelColor = new Color(228,255,214);
 
     //DEBUG
-    private int test = 2;
+    private int test = 0;
 
     //Creates main window
     public WindowManager(){
@@ -316,10 +320,12 @@ public class WindowManager extends JFrame {
         //Register button
 
         JLabel emptyFieldsLabel = new JLabel("Some fields remain unfilled");
-        emptyFieldsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 140, 100, 30);
+        emptyFieldsLabel.setForeground(Color.RED);
+        emptyFieldsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 210, 200, 30);
 
-        JLabel inconsistentPasswordsLabel = new JLabel("Both passwords ");
-        inconsistentPasswordsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 140, 100, 30);
+        JLabel inconsistentPasswordsLabel = new JLabel("Both passwords don't match");
+        inconsistentPasswordsLabel.setForeground(Color.RED);
+        inconsistentPasswordsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 210, 200, 30);
         
         JLabel usernameInUseLabel = new JLabel("Username already in use");
         usernameInUseLabel.setForeground(Color.RED);
@@ -696,8 +702,8 @@ public class WindowManager extends JFrame {
 
             //TODO get appointment info of Date Time Issue and Severity
             JTextArea entryArea = new JTextArea(2, 20);
-            entryArea.setText("Date: 09/11\tTime: 8:53 AM\n" +
-                    "Issue: Death\tSeverity: infinity? 5?");
+            entryArea.setText("Date: 10/09\tTime: 8:42 PM\n" +
+                    "Issue: Burn\tSeverity: 4");
             //entryArea.setText(entries[i]);
             entryArea.setWrapStyleWord(true);
             entryArea.setLineWrap(true);
@@ -751,13 +757,20 @@ public class WindowManager extends JFrame {
                     //If ailment is one of serious issues OR severity is 4 or 5
                     if(ailmentList.getSelectedIndex() < 7 || severityNum >= 4){
                         //Send alert to HSP
-                        //TODO send alert
+                        //TODO send alert to doctor
 
                     }
 
                     //Create entry
                     //TODO send to database
                     test++;
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                    Calendar cal = Calendar.getInstance();
+                    try {
+                        BackEndManager.sharedManager().createHealthConditionEntry("Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum, accountid);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     //Reshow page
                     ShowHealthCondition(accountid);
@@ -815,11 +828,11 @@ public class WindowManager extends JFrame {
             JPanel appointmentPane = new JPanel();
             appointmentPane.setBackground(panelColor);
             appointmentPane.setBorder(BorderFactory.createRaisedBevelBorder());
-            appointmentPane.setMinimumSize(new Dimension(scrollPane.getWidth(),370/5));
+            appointmentPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
 
             //TODO get appointment info of Date Time and Doc name
             JTextArea entryArea = new JTextArea(2, 20);
-            entryArea.setText("Date: mm/dd\nTime: 8:00 PM\n\nDoctor: Dr.Doc Tor");
+            entryArea.setText("Date: 09/10\nTime: 11:00 PM\n\nDoctor: Curtis");
             //entryArea.setText(appointmentInfos[i]);
             entryArea.setWrapStyleWord(true);
             entryArea.setLineWrap(true);
@@ -827,9 +840,6 @@ public class WindowManager extends JFrame {
             entryArea.setEditable(false);
             entryArea.setFocusable(false);
             appointmentPane.add(entryArea);
-
-            //TODO set appointment description to tooltip text
-            appointmentPane.setToolTipText("sample tooltip");
 
             JButton deleteAppointmentButton = new JButton("Delete");
             deleteAppointmentButton.setBounds(appointmentPane.getWidth() * 3 / 4, 0, appointmentPane.getWidth() / 4, appointmentPane.getHeight());
@@ -870,7 +880,7 @@ public class WindowManager extends JFrame {
         makeAppointmentButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 + 200, 150, 30);
         makeAppointmentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //Logout
+                //Show Make Appointment
                 ShowMakeAppointment(accountid, dashboardType);
             }
         });
@@ -884,56 +894,46 @@ public class WindowManager extends JFrame {
     public void ShowMakeAppointment(int accountid, int dashboardType){
         contentPane.removeAll();
 
-        JPanel aptPanel = new JPanel();
-        aptPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        aptPanel.setBackground(panelColor);
-        aptPanel.setLayout(null);
-        aptPanel.setBounds(contentPane.getWidth() / 2 - 300, contentPane.getHeight() / 2 - 225, 600, 450);
-
         JLabel datelabel = new JLabel("Select Date :");
-        datelabel.setBounds(185, 52, 100, 100);
+        datelabel.setBounds(185, 25, 100, 100);
         contentPane.add(datelabel);
 
         String[] day= {"Date","1", "2", "3", "4", "5","6","7","8","9","10","11","12","13","14","15"
                 ,"16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"};
         JComboBox dayscombobox = new JComboBox(day);
-        dayscombobox.setBounds(contentPane.getWidth() / 2 - 125, contentPane.getHeight() / 2 - 210, 100, 100);
+        dayscombobox.setBounds(contentPane.getWidth() / 2 - 125, contentPane.getHeight() / 2 - 210, 100, 50);
         contentPane.add(dayscombobox);
 
         String[] month = {"Month", "January", "February", "March", "April", "May","June"
                 ,"July","August","September","October","November","December"};
         JComboBox monthcombobox = new JComboBox(month);
-        monthcombobox.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 210, 100, 100);
+        monthcombobox.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 210, 100, 50);
         contentPane.add(monthcombobox);
 
         String[] year = {"Year","2015","2016","2017"};
         JComboBox yearcombobox = new JComboBox(year);
-        yearcombobox.setBounds(contentPane.getWidth() / 2 + 125, contentPane.getHeight() / 2 - 210, 100, 100);
+        yearcombobox.setBounds(contentPane.getWidth() / 2 + 125, contentPane.getHeight() / 2 - 210, 100, 50);
         contentPane.add(yearcombobox);
-
-        JLabel otherinfolabel = new JLabel("Brief Information:");
-        otherinfolabel.setBounds(155, 125, 200, 200);
-        contentPane.add(otherinfolabel);
 
         String[] time = {"Time","9 to 10","10 to 11","11 to 12", "12 to 1", "2 to 3", "3 to 4", "4 to 5"};
         JComboBox timecombobox = new JComboBox(time);
-        timecombobox.setBounds(contentPane.getWidth() / 2 -275 ,contentPane.getHeight() / 2 - 25, 200, 100);
+        timecombobox.setBounds(contentPane.getWidth() / 2 -275 ,contentPane.getHeight() / 2 - 25, 200,50);
         contentPane.add(timecombobox);
 
         //TODO get all doctor names based on availability
         String[] physicians = {"Physicians","Vimal", "Curtis", "Matus", "Bryan", "Ryan"};
         JComboBox physiciancombobox = new JComboBox(physicians);
-        physiciancombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 50,200,100);
+        physiciancombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 50,200,50);
         contentPane.add(physiciancombobox);
 
         //Arbitrary
         String[] insurance = {"Insurance Provider", "Aetna", "Aviva", "Life Saver", "Life Care"};
         JComboBox insurancecombobox = new JComboBox(insurance);
-        insurancecombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 125,200,100);
+        insurancecombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 125,200,50);
         contentPane.add(insurancecombobox);
 
         JLabel reasonlabel = new JLabel("Reason For Visit:");
-        reasonlabel.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 50, 200, 200);
+        reasonlabel.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 125, 200, 200);
         contentPane.add(reasonlabel);
 
         JTextArea reasonTextArea = new JTextArea();
@@ -955,18 +955,32 @@ public class WindowManager extends JFrame {
 
         contentPane.add(backButton);
 
-        //Create Button
+        //Make Button
+        JLabel emptyFields = new JLabel("Some fields are empty");
+        emptyFields.setForeground(Color.RED);
+        emptyFields.setBounds(contentPane.getWidth() / 2, contentPane.getHeight()/2 + 225, 200, 20);
+
         JButton makeButton = new JButton("Make");
         makeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Check if all fields are selected
-                if(true){
+                if(dayscombobox.getSelectedIndex() != 0 && monthcombobox.getSelectedIndex() != 0 && yearcombobox.getSelectedIndex() != 0 && physiciancombobox.getSelectedIndex() !=0 && timecombobox.getSelectedIndex() != 0 && insurancecombobox.getSelectedIndex() != 0){
                     //Create appointment
                     //TODO add appointment to database
+                    try {
+                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid,new String("Date: " + year[yearcombobox.getSelectedIndex()] + "/" + month[monthcombobox.getSelectedIndex()] + "/" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\n\nDoctor: " + physicians[physiciancombobox.getSelectedIndex()])));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     //return to appointments list
                     ShowAppointments(accountid, dashboardType);
                 }else{
+                    //Print Error: Empty fields
+                    contentPane.add(emptyFields);
 
+                    contentPane.repaint();
+                    contentPane.revalidate();
                 }
             }
         });

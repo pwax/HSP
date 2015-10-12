@@ -288,7 +288,11 @@ public class WindowManager extends JFrame {
 
         //Register button
 
-        JLabel emptyFields = new JLabel("Some fileds remain unfilled");
+        JLabel emptyFieldsLabel = new JLabel("Some fields remain unfilled");
+        emptyFieldsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 140, 100, 30);
+
+        JLabel inconsistentPasswordsLabel = new JLabel("Both passwords ");
+        inconsistentPasswordsLabel.setBounds(contentPane.getWidth() / 2 + 25, contentPane.getHeight() / 2 + 140, 100, 30);
 
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(new ActionListener() {

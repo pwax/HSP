@@ -70,7 +70,7 @@ public class WindowManager extends JFrame {
         passwordLabel.setBounds(contentPane.getWidth() / 2 - 175, contentPane.getHeight() / 2 - 10, 66, 14);
         contentPane.add(passwordLabel);
 
-        JTextField passwordField = new JTextField();
+        JTextField passwordField = new JPasswordField();
         passwordField.setBounds(contentPane.getWidth() / 2 - 90, contentPane.getHeight() / 2 - 10, 216, 20);
         contentPane.add(passwordField);
 

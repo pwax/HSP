@@ -45,7 +45,6 @@ public class WindowManager extends JFrame {
 
     //Show Login page
     public void ShowLogin(){
-        System.out.print("showing login\n");
         //Clear old content pane
         contentPane.removeAll();
 
@@ -781,6 +780,8 @@ public class WindowManager extends JFrame {
                         severityNum = 5;
                     }
 
+
+
                     //Create entry
                     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                     Calendar cal = Calendar.getInstance();
@@ -790,8 +791,14 @@ public class WindowManager extends JFrame {
                         e.printStackTrace();
                     }
 
-                    //Reshow page
-                    ShowHealthCondition(accountid);
+
+                    if(severityNum == 5 || ailmentList.getSelectedIndex() > 0 && ailmentList.getSelectedIndex() < 7){
+                        //Show Alert
+                        ShowAlert(accountid);
+                    }else {
+                        //Reshow page
+                        ShowHealthCondition(accountid);
+                    }
                 }else{
                     //Display necessary field entry
                     contentPane.remove(invalidinputLabel);
@@ -809,6 +816,37 @@ public class WindowManager extends JFrame {
 
         contentPane.revalidate();
         contentPane.repaint();
+    }
+
+    //Show Alert page after Update page
+    public void ShowAlert(int accountid){
+        //Clear old content pane
+        contentPane.removeAll();
+
+        //Apply changes to content panel
+
+        //Title
+        JTextArea warning = new JTextArea("You have a serious health risk.\nCall 911 or get help immediately!");
+        warning.setWrapStyleWord(true);
+        warning.setLineWrap(true);
+        warning.setOpaque(false);
+        warning.setEditable(false);
+        warning.setFocusable(false);
+        warning.setBounds(contentPane.getWidth() / 2 - 75, contentPane.getHeight() / 2 - 100, 200, 100);
+        contentPane.add(warning);
+
+        JButton returnButton = new JButton("Okay");
+        returnButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                ShowPatientDashboard(accountid);
+            }
+        });
+        returnButton.setBounds(contentPane.getWidth() / 2 - 50, contentPane.getHeight() / 2 + 50, 100, 30);
+        contentPane.add(returnButton);
+
+        //Reapply panel
+        contentPane.repaint();
+        contentPane.revalidate();
     }
 
     //Show Medical History page

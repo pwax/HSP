@@ -838,15 +838,6 @@ public class WindowManager extends JFrame {
         contentPane.revalidate();
     }
 
-    //Show Medical History page
-    public void ShowMedicalHistory(int accountid){
-        contentPane.removeAll();
-
-
-        contentPane.revalidate();
-        contentPane.repaint();
-    }
-
     //Show Schedule Appointment page
     public void ShowAppointments(int accountid){
         contentPane.removeAll();
@@ -910,6 +901,7 @@ public class WindowManager extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         //Appointments Label
         JLabel labelAppointment = new JLabel("Appointments");
         labelAppointment.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 100, 50);
@@ -1018,7 +1010,7 @@ public class WindowManager extends JFrame {
                 if(dayscombobox.getSelectedIndex() != 0 && monthcombobox.getSelectedIndex() != 0 && yearcombobox.getSelectedIndex() != 0 && physiciancombobox.getSelectedIndex() !=0 && timecombobox.getSelectedIndex() != 0 && insurancecombobox.getSelectedIndex() != 0){
                     //Create appointment
                     try {
-                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid,new String("Date: " + year[yearcombobox.getSelectedIndex()] + "/" + month[monthcombobox.getSelectedIndex()] + "/" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\n\nDoctor: " + physicians[physiciancombobox.getSelectedIndex()]),-1,BackEndManager.sharedManager().getUserID(physicians[physiciancombobox.getSelectedIndex()])));
+                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid,new String("Date: " + year[yearcombobox.getSelectedIndex()] + "-" + month[monthcombobox.getSelectedIndex()] + "-" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\n\nDoctor: " + physicians[physiciancombobox.getSelectedIndex()]),-1,BackEndManager.sharedManager().getUserID(physicians[physiciancombobox.getSelectedIndex()])));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1042,12 +1034,68 @@ public class WindowManager extends JFrame {
         contentPane.repaint();
     }
 
+    //Show Medical History
+    public void ShowMedicalHistory(int accountid){
+        contentPane.removeAll();
+
+        //Medical History Label
+        JLabel medicalhistoryLabel = new JLabel("Medical History");
+        medicalhistoryLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 100, 50);
+        contentPane.add(medicalhistoryLabel);
+
+        //Medical History Text Area
+        JTextArea medicalhistoryTextArea = new JTextArea();
+        medicalhistoryTextArea.setBounds(20, contentPane.getHeight() / 2 - 200, contentPane.getWidth() - 40, 375);
+        medicalhistoryTextArea.setWrapStyleWord(true);
+        medicalhistoryTextArea.setLineWrap(true);
+        medicalhistoryTextArea.setFocusable(false);
+        medicalhistoryTextArea.setEditable(false);
+        medicalhistoryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+        try {
+            //medicalhistoryTextArea.setText(BackEndManager.sharedManager().getMedicalHistory(accountID));
+        } catch (Exception e) {
+            medicalhistoryTextArea.setText("No medical history found.");
+            e.printStackTrace();
+        }
+        contentPane.add(medicalhistoryTextArea);
+
+        //Back Button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //TODO
+                //Save changes
+                /*try {
+                    BackEndManager.sharedManager().setMedicalHistory(patientAccountid);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                   */
+
+                //Return to dashboard
+                ShowPatientDashboard(accountid);
+            }
+        });
+        backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
+
+        contentPane.add(backButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
     //Show Doctor Dashboard
     public void ShowDoctorDashboard(int accountid){
         contentPane.removeAll();
 
         //Title
-        JLabel titleLabel = new JLabel("Doctor Dashboard");
+        JLabel titleLabel = null;
+        try {
+            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Doctor Dashboard");
+        } catch (Exception e) {
+            titleLabel = new JLabel("Doctor Dashboard");
+            e.printStackTrace();
+        }
         titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
         contentPane.add(titleLabel);
 
@@ -1176,12 +1224,90 @@ public class WindowManager extends JFrame {
 
     //Show HSP Dashboard
     public void ShowHSPDashboard(int accountid){
+        contentPane.removeAll();
 
+        //Title
+        JLabel titleLabel = null;
+        try {
+            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s HSP Dashboard");
+        } catch (Exception e) {
+            titleLabel = new JLabel("HSP Dashboard");
+            e.printStackTrace();
+        }
+        titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
+        contentPane.add(titleLabel);
+
+        JButton patientsearchButton = new JButton("Patient Search");
+        patientsearchButton.setBounds((contentPane.getWidth() / 4) * 1 + 50, (contentPane.getHeight() / 4) * 1 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        patientsearchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Patient Search
+                try {
+                    ShowPatientSearch(accountid, 2, BackEndManager.sharedManager().searchPatients(""));
+                } catch (Exception e) {
+                    ShowPatientSearch(accountid, 2, null);
+                    e.printStackTrace();
+                }
+            }
+        });
+        contentPane.add(patientsearchButton);
+
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 + 200, 150, 30);
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Logout
+                ShowLogin();
+            }
+        });
+        contentPane.add(logoutButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
     }
 
     //Show LabTech Dashboard
     public void ShowLabtechDashboard(int accountid){
+        contentPane.removeAll();
 
+        //Title
+        JLabel titleLabel = null;
+        try {
+            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Labtech Dashboard");
+        } catch (Exception e) {
+            titleLabel = new JLabel("Labtech Dashboard");
+            e.printStackTrace();
+        }
+        titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
+        contentPane.add(titleLabel);
+
+        JButton patientsearchButton = new JButton("Patient Search");
+        patientsearchButton.setBounds((contentPane.getWidth() / 4) * 1 + 50, (contentPane.getHeight() / 4) * 1 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        patientsearchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Patient Search
+                try {
+                    ShowPatientSearch(accountid, 3, BackEndManager.sharedManager().searchPatients(""));
+                } catch (Exception e) {
+                    ShowPatientSearch(accountid, 3, null);
+                    e.printStackTrace();
+                }
+            }
+        });
+        contentPane.add(patientsearchButton);
+
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 + 200, 150, 30);
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Logout
+                ShowLogin();
+            }
+        });
+        contentPane.add(logoutButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
     }
 
     //Show patient search window
@@ -1240,7 +1366,8 @@ public class WindowManager extends JFrame {
                 entryArea.setFocusable(false);
                 resultsPane.add(entryArea);
 
-                JButton patientHealthConditionsButton = new JButton("");
+
+                JButton patientHealthConditionsButton = new JButton("Health Conditions");
                 patientHealthConditionsButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
                 patientHealthConditionsButton.putClientProperty("patientID", patientList[i].id);    //Used to store the patien ID on button object, java is nifty
                 patientHealthConditionsButton.addActionListener(new ActionListener() {
@@ -1249,11 +1376,59 @@ public class WindowManager extends JFrame {
                         ShowPatientHealthConditions(accountid, dashboardType, (int) patientHealthConditionsButton.getClientProperty("patientID"));
                     }
                 });
+                //Anti Perms
+                if(dashboardType == 3){
+                    patientHealthConditionsButton.setEnabled(false);
+                }
                 resultsPane.add(patientHealthConditionsButton);
 
+                JButton patientMedicalHistoryButton = new JButton("Medical History");
+                patientMedicalHistoryButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                patientMedicalHistoryButton.putClientProperty("patientID", patientList[i].id);    //Used to store the patien ID on button object, java is nifty
+                patientMedicalHistoryButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Select Patient Health Conditions
+                        ShowPatientMedicalHistory(accountid, dashboardType, (int) patientHealthConditionsButton.getClientProperty("patientID"));
+                    }
+                });
+                //Anti Perms
+                if(dashboardType == 3){
+                    patientMedicalHistoryButton.setEnabled(false);
+                }
+                resultsPane.add(patientMedicalHistoryButton);
+
+                JButton patientPrescriptionsButton = new JButton("Prescriptions");
+                patientPrescriptionsButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                patientPrescriptionsButton.putClientProperty("patientID", patientList[i].id);    //Used to store the patien ID on button object, java is nifty
+                patientPrescriptionsButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Select Patient Health Conditions
+                        ShowPatientPrescriptions(accountid, dashboardType, (int) patientHealthConditionsButton.getClientProperty("patientID"));
+                    }
+                });
+                //Anti Perms
+                if(dashboardType == 3){
+                    patientPrescriptionsButton.setEnabled(false);
+                }
+                resultsPane.add(patientPrescriptionsButton);
+
+                JButton patientLabWorkButton = new JButton("Lab Work");
+                patientLabWorkButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                patientLabWorkButton.putClientProperty("patientID", patientList[i].id);    //Used to store the patien ID on button object, java is nifty
+                patientLabWorkButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Select Patient Health Conditions
+                        ShowPatientLabRecords(accountid, dashboardType, (int) patientHealthConditionsButton.getClientProperty("patientID"));
+                    }
+                });
+                //Anti Perms
+                if(dashboardType == 2){
+                    patientLabWorkButton.setEnabled(false);
+                }
+                resultsPane.add(patientLabWorkButton);
                 gridPane.add(resultsPane);
             }
-            contentPane.add(scrollPane);
+                contentPane.add(scrollPane);
         }
 
         //Patient Search Label
@@ -1275,16 +1450,6 @@ public class WindowManager extends JFrame {
 
         contentPane.revalidate();
         contentPane.repaint();
-    }
-
-    //Show Patient Lab Results
-    public void ShowPatientLabRecords(int accountid, int dashboardType, int patientAccountid){
-
-    }
-
-    //Show Patient Prescriptions
-    public void ShowPatientPrescriptions(int accountid, int dashboardType, int patientAccountid){
-
     }
 
     //Show Patient Health Conditions
@@ -1475,6 +1640,77 @@ public class WindowManager extends JFrame {
 
         contentPane.revalidate();
         contentPane.repaint();
+    }
+
+    //Show Patient Medical History
+    public void ShowPatientMedicalHistory(int accountid, int dashboardType, int patientAccountid){
+        contentPane.removeAll();
+
+        //Medical History Label
+        JLabel medicalhistoryLabel = null;
+        try {
+            medicalhistoryLabel = new JLabel("Editing " + BackEndManager.sharedManager().getUsername(patientAccountid) + "'s Medical History");
+        } catch (Exception e) {
+            medicalhistoryLabel = new JLabel("Editing Patient's Medical History");
+            e.printStackTrace();
+        }
+        medicalhistoryLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 250, 50);
+        contentPane.add(medicalhistoryLabel);
+
+        //Medical History Text Area
+        JTextArea medicalhistoryTextArea = new JTextArea();
+        //medicalhistoryTextArea.setBounds(20, contentPane.getHeight() / 2 - 200, contentPane.getWidth() - 40, 375);
+        medicalhistoryTextArea.setWrapStyleWord(true);
+        medicalhistoryTextArea.setLineWrap(true);
+        medicalhistoryTextArea.setFocusable(true);
+        medicalhistoryTextArea.setEditable(true);
+        medicalhistoryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+        try {
+            //medicalhistoryTextArea.setText(BackEndManager.sharedManager().getMedicalHistory(accountID));
+        } catch (Exception e) {
+            medicalhistoryTextArea.setText("No medical history found.");
+            e.printStackTrace();
+        }
+
+        //Scroll Pane
+        JScrollPane scrollPane = new JScrollPane(medicalhistoryTextArea);
+        scrollPane.setBounds(20, contentPane.getHeight() / 2 - 200, contentPane.getWidth() - 40, 375);
+
+        contentPane.add(scrollPane);
+
+        //Save and Exit Button
+        JButton backButton = new JButton("Save and Exit");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //TODO
+                //Save changes
+                /*try {
+                    BackEndManager.sharedManager().setMedicalHistory(patientAccountid);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                   */
+
+                //Return to dashboard
+                ReturnToCurrentDashboard(accountid, dashboardType);
+            }
+        });
+        backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 150, 30);
+
+        contentPane.add(backButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Patient Prescriptions
+    public void ShowPatientPrescriptions(int accountid, int dashboardType, int patientAccountid){
+
+    }
+
+    //Show Patient Lab Results
+    public void ShowPatientLabRecords(int accountid, int dashboardType, int patientAccountid){
+
     }
 
     public void ReturnToCurrentDashboard(int accountid, int dashboardType){

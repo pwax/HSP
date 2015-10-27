@@ -195,14 +195,13 @@ public class BackEndManager {
 
             System.out.println("Getting id for user");
 
-            String sql = "SELECT username FROM Users WHERE id = "+"'"+userid+"'";
+            String sql = "SELECT username FROM Users WHERE id = '"+userid+"'";
 
             ResultSet set = statement.executeQuery(sql);
 
             if (set.next()){
-                name = set.getNString("username");
+                name = set.getString("username");
                 System.out.println("username: "+name);
-
             }else{
                 System.out.println("no id for such user");
                 name = "";
@@ -470,17 +469,15 @@ public class BackEndManager {
             int userID = appointment.userID;
             String info = appointment.info;
             int doctorID = appointment.doctorID;
+            System.out.println(doctorID);
 
-            String sql = "INSERT INTO Appointments " +
-                    "VALUES ('0',"+ "'"+userID+"', "+"'"+info+"'" + "'"+doctorID+"')";
+            String sql = "INSERT INTO Appointments VALUES ('0', '"+userID+"', '"+info+"', '"+doctorID+"')";
             System.out.println(sql);
 
             Connection userConnection = getUserConnection();
 
             Statement statement = userConnection.createStatement();
             statement.executeUpdate(sql);
-
-
         }catch (Exception e){
             System.out.println("failed to insert records with error: ");
             e.printStackTrace();

@@ -7,10 +7,14 @@ public class Appointment {
 
     public int userID;
     public String info;
+    public int appointmentID;
+    public int doctorID;
 
-    public Appointment(int userID, String info){
+    public Appointment(int userID, String info, int appointmentID, int doctorID){
         this.userID = userID;
         this.info = info;
+        this.appointmentID = appointmentID;
+        this.doctorID = doctorID;
     }
 
 

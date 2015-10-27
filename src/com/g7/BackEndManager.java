@@ -27,10 +27,7 @@ public class BackEndManager {
             }catch (Exception e){
                 System.out.println(e);
             }
-
-
         }
-
         return sharedManager;
     }
 
@@ -119,8 +116,6 @@ public class BackEndManager {
         }else{
             System.out.println("Missing something from registration");
         }
-
-
     }
 
     public boolean doesUserExist(String username){
@@ -167,19 +162,18 @@ public class BackEndManager {
             Connection userConnection = getUserConnection();
             Statement statement = userConnection.createStatement();
 
-            System.out.println("getting id for user");
+            System.out.println("Getting ID for user: " + username);
 
             String sql = "SELECT id FROM Users WHERE username = "+"'"+username+"'";
-            System.out.println(username + "\n"+ sql);
 
             ResultSet set = statement.executeQuery(sql);
 
             if (set.next()){
                 id = set.getInt("id");
-                System.out.println("id: "+id);
+                System.out.println(username + "'s ID: "+id);
 
             }else{
-                System.out.println("no id for such user");
+                System.out.println("No ID for such user: " + username);
                 id = -1;
             }
 
@@ -189,6 +183,37 @@ public class BackEndManager {
         }
 
         return id;
+
+    }
+
+    public String getUsername(int userid){
+        String name;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("Getting id for user");
+
+            String sql = "SELECT username FROM Users WHERE id = "+"'"+userid+"'";
+
+            ResultSet set = statement.executeQuery(sql);
+
+            if (set.next()){
+                name = set.getNString("username");
+                System.out.println("username: "+name);
+
+            }else{
+                System.out.println("no id for such user");
+                name = "";
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            name = "";
+        }
+
+        return name;
 
     }
 
@@ -266,20 +291,23 @@ public class BackEndManager {
 
                 ResultSet entrySet = statement.executeQuery(sql);
 
-                if (entrySet.next()) {
+                //TODO i moved the entry.next() inside the forloop to make it iterate once each time,
+                //considering we know the total count of rows and shouldn't go over
+                entrySet.next();
 
-                    for (int i = 0; i < count; i++) {
-                        int userIDFromServer = entrySet.getInt("userID");
-                        String info = entrySet.getString("info");
+                for (int i = 0; i < count; i++) {
+                    int userIDFromServer = entrySet.getInt("userID");
+                    userID = entrySet.getInt("userID");
+                    String info = entrySet.getString("info");
 
-                        System.out.println(userIDFromServer + " " + info);
+                    System.out.println(userIDFromServer + " " + info);
 
-                        HealthCareConditionEntry entry = new HealthCareConditionEntry(userID, info);
+                    HealthCareConditionEntry entry = new HealthCareConditionEntry(userID, info);
 
-                        entries[i] = entry;
-                    }
+                    entries[i] = entry;
+
+                    entrySet.next();
                 }
-
 
             }else {
                 System.out.println("no appointments");
@@ -315,25 +343,84 @@ public class BackEndManager {
 
                 appointments = new Appointment[count];
 
-                String sql = "SELECT id, userID, info FROM Appointments WHERE userID = "+"'"+userID+"'";
+                String sql = "SELECT id, userID, info, doctorID FROM Appointments WHERE userID = "+"'"+userID+"'";
 
                 ResultSet appointmentSet = statement.executeQuery(sql);
 
-                if (appointmentSet.next()) {
+                appointmentSet.next();
 
-                    for (int i = 0; i < count; i++) {
-                        int userIDFromServer = appointmentSet.getInt("userID");
-                        String info = appointmentSet.getString("info");
+                for (int i = 0; i < count; i++) {
+                    System.out.println(appointmentSet.getInt("id"));
+                    int appointmentIDFromServer = appointmentSet.getInt("id");
+                    int userIDFromServer = appointmentSet.getInt("userID");
+                    String info = appointmentSet.getString("info");
+                    int doctorIDFromServer = appointmentSet.getInt("doctorID");
 
-                        System.out.println(userIDFromServer + " " + info);
+                    System.out.println(userIDFromServer + " " + info);
 
-                        Appointment appointment = new Appointment(userID, info);
+                    Appointment appointment = new Appointment(userIDFromServer, info, appointmentIDFromServer, doctorIDFromServer);  //TODO update Appointment here with appropriate doctor field once created
 
-                        appointments[i] = appointment;
-                    }
+                    appointments[i] = appointment;
+
+                    appointmentSet.next();
                 }
+            }else {
+                System.out.println("no appointments");
+                appointments = null;
+            }
+
+            return appointments;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            appointments = null;
+            return appointments;
+        }
 
 
+    }
+
+    public Appointment[] getDoctorAppointmentList(int doctorID){
+
+        //Return all appointments of the given user's appointment list
+
+        Appointment[] appointments;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting appointments");
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Appointments WHERE doctorID = "+"'"+doctorID+"'";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+                System.out.println(count +" appointments");
+
+                appointments = new Appointment[count];
+
+                String sql = "SELECT id, userID, info FROM Appointments WHERE doctorID = "+"'"+doctorID+"'";
+
+                ResultSet appointmentSet = statement.executeQuery(sql);
+
+                appointmentSet.next();
+
+                for (int i = 0; i < count; i++) {
+                    System.out.println(appointmentSet.getInt("id"));
+                    int appointmentIDFromServer = appointmentSet.getInt("id");
+                    int userIDFromServer = appointmentSet.getInt("userID");
+                    String info = appointmentSet.getString("info");
+                    int doctorIDFromServer = appointmentSet.getInt("doctorID");
+
+                    System.out.println(userIDFromServer + " " + info);
+
+                    Appointment appointment = new Appointment(userIDFromServer, info, appointmentIDFromServer, doctorIDFromServer);  //TODO update Appointment here with appropriate doctor field once created
+
+                    appointments[i] = appointment;
+
+                    appointmentSet.next();
+                }
             }else {
                 System.out.println("no appointments");
                 appointments = null;
@@ -382,9 +469,10 @@ public class BackEndManager {
 
             int userID = appointment.userID;
             String info = appointment.info;
+            int doctorID = appointment.doctorID;
 
             String sql = "INSERT INTO Appointments " +
-                    "VALUES ('0',"+ "'"+userID+"', "+"'"+info+"'" +")";
+                    "VALUES ('0',"+ "'"+userID+"', "+"'"+info+"'" + "'"+doctorID+"')";
             System.out.println(sql);
 
             Connection userConnection = getUserConnection();
@@ -398,6 +486,74 @@ public class BackEndManager {
             e.printStackTrace();
         }
 
+    }
+
+    public void removeAppointment(int appointmentID){
+        try {
+            System.out.println("removing appointment id: '" + appointmentID +"'");
+
+            String sql = "DELETE FROM Appointments WHERE id=" + "'" + appointmentID + "'";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+
+
+        }catch (Exception e){
+            System.out.println("failed to remove appointment with error: ");
+            e.printStackTrace();
+        }
+
+    }
+
+    public Patient[] searchPatients(String substring){
+
+        //Return all patient users with name's containing the input substring
+
+        Patient[] patients;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Users WHERE username LIKE '%"+substring+"%' AND accountType=0";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+
+                patients = new Patient[count];
+
+                String sql = "SELECT id, username FROM Users WHERE  username LIKE '%"+substring+"%' AND accountType=0";
+
+                ResultSet patientSet = statement.executeQuery(sql);
+
+                patientSet.next();
+
+                for (int i = 0; i < count; i++) {
+                    String usernameFromServer = patientSet.getString("username");
+                    int userIDFromServer = patientSet.getInt("id");
+
+                    Patient patient = new Patient(usernameFromServer,userIDFromServer);
+
+                    patients[i] = patient;
+
+                    patientSet.next();
+                }
+            }else {
+                System.out.println("no results");
+                patients = null;
+            }
+
+            return patients;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            patients = null;
+
+            return patients;
+        }
     }
 
     public int getDashboardType(int userID){

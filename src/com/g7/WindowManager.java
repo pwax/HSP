@@ -13,14 +13,13 @@ import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Window class used to display all GUI
  */
 public class WindowManager extends JFrame {
 
-//region Leave all this alone
+    //region Initialization
     private JPanel contentPane;
     private Color backgroundColor = new Color(211,216,255);
     private Color panelColor = new Color(228,255,214);
@@ -286,7 +285,7 @@ public class WindowManager extends JFrame {
         });
         contentPane.add(doctorRadioButton);
 
-        JRadioButton nurseRadioButton = new JRadioButton("Nurse");
+        JRadioButton nurseRadioButton = new JRadioButton("HSP");
         nurseRadioButton.setBounds(contentPane.getWidth() / 2 - 90, contentPane.getHeight() / 2 + 100, 116, 20);
         nurseRadioButton.setOpaque(false);
         nurseRadioButton.addActionListener(new ActionListener() {
@@ -455,18 +454,8 @@ public class WindowManager extends JFrame {
         titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
         contentPane.add(titleLabel);
 
-        JButton editinfoButton = new JButton("Edit Information");
-        editinfoButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
-        editinfoButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                //Edit Info
-                ShowEditInfo(accountid, 0);
-            }
-        });
-        contentPane.add(editinfoButton);
-
         JButton healthconditionButton = new JButton("Health Condition");
-        healthconditionButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        healthconditionButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
         healthconditionButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Update Health Conditions
@@ -476,21 +465,21 @@ public class WindowManager extends JFrame {
         contentPane.add(healthconditionButton);
 
         JButton medicalhistoryButton = new JButton("Medical History");
-        medicalhistoryButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 2, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        medicalhistoryButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
         medicalhistoryButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //MMedical History
+                //Medical History
                 ShowMedicalHistory(accountid);
             }
         });
         contentPane.add(medicalhistoryButton);
 
-        JButton scheduleappointmentButton = new JButton("Schedule Appointment");
-        scheduleappointmentButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 2, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        JButton scheduleappointmentButton = new JButton("Appointments");
+        scheduleappointmentButton.setBounds((contentPane.getWidth() / 4) + 50, (contentPane.getHeight() / 4) * 2, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
         scheduleappointmentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Schedule Appointment
-                ShowAppointments(accountid, 0);
+                ShowAppointments(accountid);
             }
         });
         contentPane.add(scheduleappointmentButton);
@@ -644,7 +633,7 @@ public class WindowManager extends JFrame {
 
         JComboBox ailmentList = new JComboBox(ailmentTypes);
         ailmentList.setSelectedIndex(0);
-        ailmentList.setBounds(contentPane.getWidth() / 4 - 100, contentPane.getHeight() / 6 ,300,30);
+        ailmentList.setBounds(contentPane.getWidth() / 4 - 100, contentPane.getHeight() / 6, 300, 30);
         contentPane.add(ailmentList);
 
         //Severity Label
@@ -859,7 +848,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Schedule Appointment page
-    public void ShowAppointments(int accountid, int dashboardType){
+    public void ShowAppointments(int accountid){
         contentPane.removeAll();
 
         Appointment[] appointments;
@@ -897,13 +886,18 @@ public class WindowManager extends JFrame {
 
             JButton deleteAppointmentButton = new JButton("Delete");
             deleteAppointmentButton.setBounds(appointmentPane.getWidth() * 3 / 4, 0, appointmentPane.getWidth() / 4, appointmentPane.getHeight());
+            deleteAppointmentButton.putClientProperty("appointmentID", appointments[i].appointmentID);
             deleteAppointmentButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
                     //Delete Appointment
-
+                    try {
+                        BackEndManager.sharedManager().removeAppointment((int) deleteAppointmentButton.getClientProperty("appointmentID"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     //Reload this window
-                    ShowAppointments(accountid, dashboardType);
+                    ShowAppointments(accountid);
                 }
             });
             appointmentPane.add(deleteAppointmentButton);
@@ -926,7 +920,7 @@ public class WindowManager extends JFrame {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Return to dashboard
-                ReturnToCurrentDashboard(accountid, dashboardType);
+                ReturnToCurrentDashboard(accountid, 0);
             }
         });
         backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
@@ -938,7 +932,7 @@ public class WindowManager extends JFrame {
         makeAppointmentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Show Make Appointment
-                ShowMakeAppointment(accountid, dashboardType);
+                ShowMakeAppointment(accountid);
             }
         });
         contentPane.add(makeAppointmentButton);
@@ -948,7 +942,7 @@ public class WindowManager extends JFrame {
     }
 
     //Show Add Appointment page
-    public void ShowMakeAppointment(int accountid, int dashboardType){
+    public void ShowMakeAppointment(int accountid){
         contentPane.removeAll();
 
         JLabel datelabel = new JLabel("Select Date :");
@@ -1005,7 +999,7 @@ public class WindowManager extends JFrame {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Return to dashboard
-                ShowAppointments(accountid, dashboardType);
+                ShowAppointments(accountid);
             }
         });
         backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
@@ -1023,15 +1017,14 @@ public class WindowManager extends JFrame {
                 //Check if all fields are selected
                 if(dayscombobox.getSelectedIndex() != 0 && monthcombobox.getSelectedIndex() != 0 && yearcombobox.getSelectedIndex() != 0 && physiciancombobox.getSelectedIndex() !=0 && timecombobox.getSelectedIndex() != 0 && insurancecombobox.getSelectedIndex() != 0){
                     //Create appointment
-                    //TODO add appointment to database
                     try {
-                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid,new String("Date: " + year[yearcombobox.getSelectedIndex()] + "/" + month[monthcombobox.getSelectedIndex()] + "/" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\n\nDoctor: " + physicians[physiciancombobox.getSelectedIndex()])));
+                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid,new String("Date: " + year[yearcombobox.getSelectedIndex()] + "/" + month[monthcombobox.getSelectedIndex()] + "/" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\n\nDoctor: " + physicians[physiciancombobox.getSelectedIndex()]),-1,BackEndManager.sharedManager().getUserID(physicians[physiciancombobox.getSelectedIndex()])));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                     //return to appointments list
-                    ShowAppointments(accountid, dashboardType);
+                    ShowAppointments(accountid);
                 }else{
                     //Print Error: Empty fields
                     contentPane.add(emptyFields);
@@ -1058,22 +1051,29 @@ public class WindowManager extends JFrame {
         titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
         contentPane.add(titleLabel);
 
-        JButton editinfoButton = new JButton("Edit Information");
-        editinfoButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
-        editinfoButton.addActionListener(new ActionListener() {
+        JButton viewappointmentsButton = new JButton("View Appointments");
+        viewappointmentsButton.setBounds((contentPane.getWidth() / 4) * 0 + 50, (contentPane.getHeight() / 4) * 1 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        viewappointmentsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //Edit Info
-                ShowEditInfo(accountid, 1);
+                //Show Appointments
+                ShowDoctorAppointments(accountid);
             }
         });
-        contentPane.add(editinfoButton);
-
-        JButton viewappointmentsButton = new JButton("View Appointments");
-        viewappointmentsButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 0 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
         contentPane.add(viewappointmentsButton);
 
         JButton patientsearchButton = new JButton("Patient Search");
-        patientsearchButton.setBounds((contentPane.getWidth() / 2) + 50 - (contentPane.getWidth() / 4), (contentPane.getHeight() / 4) * 2, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        patientsearchButton.setBounds((contentPane.getWidth() / 4) * 2 + 50, (contentPane.getHeight() / 4) * 1 + 50, (contentPane.getWidth() / 2) - 100, (contentPane.getHeight() / 2) - 100);
+        patientsearchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Patient Search
+                try {
+                    ShowPatientSearch(accountid, 1, BackEndManager.sharedManager().searchPatients(""));
+                } catch (Exception e) {
+                    ShowPatientSearch(accountid, 1, null);
+                    e.printStackTrace();
+                }
+            }
+        });
         contentPane.add(patientsearchButton);
 
         JButton logoutButton = new JButton("Logout");
@@ -1090,6 +1090,393 @@ public class WindowManager extends JFrame {
         contentPane.repaint();
     }
 
+    //Show Doctor Appointments
+    public void ShowDoctorAppointments(int accountid){
+        contentPane.removeAll();
+
+        Appointment[] appointments;
+        int appointmentCount;
+        try {
+            appointments = BackEndManager.sharedManager().getDoctorAppointmentList(accountid);
+            appointmentCount = appointments.length;
+
+            //Create inner grid pane
+            JPanel gridPane;
+            if(appointmentCount <= 5) {
+                gridPane = new JPanel(new GridLayout(6, 1));
+            }else {
+                gridPane = new JPanel(new GridLayout(appointmentCount, 1));
+            }
+
+            //Create JScrollpane
+            JScrollPane scrollPane = new JScrollPane(gridPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 200, 740, 370);
+
+            for(int i=0; i < appointmentCount; i++) {
+                JPanel appointmentPane = new JPanel();
+                appointmentPane.setBackground(panelColor);
+                appointmentPane.setBorder(BorderFactory.createRaisedBevelBorder());
+                appointmentPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
+
+                JTextArea entryArea = new JTextArea(2, 20);
+                entryArea.setText(appointments[i].info);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                appointmentPane.add(entryArea);
+
+                JButton deleteAppointmentButton = new JButton("Delete");
+                deleteAppointmentButton.setBounds(appointmentPane.getWidth() * 3 / 4, 0, appointmentPane.getWidth() / 4, appointmentPane.getHeight());
+                deleteAppointmentButton.putClientProperty("appointmentID", appointments[i].appointmentID);
+                deleteAppointmentButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Delete Appointment
+                        try {
+                            BackEndManager.sharedManager().removeAppointment((int)deleteAppointmentButton.getClientProperty("appointmentID"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //Reload this window
+                        ShowDoctorAppointments(accountid);
+                    }
+                });
+                appointmentPane.add(deleteAppointmentButton);
+
+                gridPane.add(appointmentPane);
+            }
+
+            contentPane.add(scrollPane);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Appointments Label
+        JLabel labelAppointment = new JLabel("Appointments");
+        labelAppointment.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 100, 50);
+        contentPane.add(labelAppointment);
+
+        //Back Button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Return to dashboard
+                ReturnToCurrentDashboard(accountid, 1);
+            }
+        });
+        backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
+
+        contentPane.add(backButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show HSP Dashboard
+    public void ShowHSPDashboard(int accountid){
+
+    }
+
+    //Show LabTech Dashboard
+    public void ShowLabtechDashboard(int accountid){
+
+    }
+
+    //Show patient search window
+    public void ShowPatientSearch(int accountid, int dashboardType, Patient[] patientList){
+        contentPane.removeAll();
+
+        //Search Patients containing searchField substring and then redisplay
+
+        //Search Box
+        JTextField searchField = new JTextField();
+        searchField.setBounds(contentPane.getWidth() / 2 + 30, contentPane.getHeight() / 2 - 235, 150, 20);
+        contentPane.add(searchField);
+
+        //Search Button
+        JButton searchButton = new JButton("Search for Patient");
+        searchButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 - 240, 150, 30);
+        searchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                try {
+                    Patient[] newPatientList = BackEndManager.sharedManager().searchPatients(searchField.getText());
+                    ShowPatientSearch(accountid,dashboardType,newPatientList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        contentPane.add(searchButton);
+
+        if(patientList != null) {
+            //Create inner grid pane
+            int patientCount = patientList.length;
+
+            JPanel gridPane;
+            if (patientCount <= 5) {
+                gridPane = new JPanel(new GridLayout(6, 1));
+            } else {
+                gridPane = new JPanel(new GridLayout(patientCount, 1));
+            }
+
+            //Search Results Area
+            JScrollPane scrollPane = new JScrollPane(gridPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 200, 740, 370);
+
+            for (int i = 0; i < patientCount; i++) {
+                JPanel resultsPane = new JPanel();
+                resultsPane.setBackground(panelColor);
+                resultsPane.setBorder(BorderFactory.createRaisedBevelBorder());
+                resultsPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
+
+                JTextArea entryArea = new JTextArea(2, 20);
+                entryArea.setText(patientList[i].name);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                resultsPane.add(entryArea);
+
+                JButton patientHealthConditionsButton = new JButton("");
+                patientHealthConditionsButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                patientHealthConditionsButton.putClientProperty("patientID", patientList[i].id);    //Used to store the patien ID on button object, java is nifty
+                patientHealthConditionsButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Select Patient Health Conditions
+                        ShowPatientHealthConditions(accountid, dashboardType, (int) patientHealthConditionsButton.getClientProperty("patientID"));
+                    }
+                });
+                resultsPane.add(patientHealthConditionsButton);
+
+                gridPane.add(resultsPane);
+            }
+            contentPane.add(scrollPane);
+        }
+
+        //Patient Search Label
+        JLabel patientSearchLabel = new JLabel("Patient Search");
+        patientSearchLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 100, 50);
+        contentPane.add(patientSearchLabel);
+
+        //Back Button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Return to dashboard
+                ReturnToCurrentDashboard(accountid, dashboardType);
+            }
+        });
+        backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
+
+        contentPane.add(backButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Patient Lab Results
+    public void ShowPatientLabRecords(int accountid, int dashboardType, int patientAccountid){
+
+    }
+
+    //Show Patient Prescriptions
+    public void ShowPatientPrescriptions(int accountid, int dashboardType, int patientAccountid){
+
+    }
+
+    //Show Patient Health Conditions
+    public void ShowPatientHealthConditions(int accountid, int dashboardType, int patientAccountid){
+        contentPane.removeAll();
+
+        //Ailment Label
+        JLabel ailmentLabel;
+        try {
+            ailmentLabel = new JLabel("What is " + BackEndManager.sharedManager().getUsername(patientAccountid) + "'s issue?");
+        } catch (Exception e) {
+            ailmentLabel = new JLabel("What is the patient's issue?");
+            e.printStackTrace();
+        }
+        ailmentLabel.setBounds(contentPane.getWidth() / 4 - 100, contentPane.getHeight() / 6 - 40, 200, 14);
+        contentPane.add(ailmentLabel);
+
+        //Ailment Dropdown
+        String[] ailmentTypes = {"Select Ailment","Addiction","Broken Limb","Burn","Concussion","Head Injury","Heart Attack","Anxiety"
+                ,"Arthritis","Asthma","Bronchitis","Carpal Tunnel","Chronic Fatigue","Common Cold","Confusion"
+                ,"Constipation","Dental Pain","Depression","Diarrhea","Digestive Problems","Dysentery"
+                ,"Eye Problems","Fatigue","Fertility","Lower Back Pain","Menopause","Migraine","Nausea","Pain"
+                ,"Pneumonia","Sleep Loss","Sore Throat","Stress","Tonsillitis","UTI","Vomiting"};
+
+        JComboBox ailmentList = new JComboBox(ailmentTypes);
+        ailmentList.setSelectedIndex(0);
+        ailmentList.setBounds(contentPane.getWidth() / 4 - 100, contentPane.getHeight() / 6, 300, 30);
+        contentPane.add(ailmentList);
+
+        //Severity Label
+        JLabel severityLabel = new JLabel("How bad is it?");
+        severityLabel.setBounds(contentPane.getWidth() / 4 - 100, contentPane.getHeight() / 2 - 40, 200, 14);
+        contentPane.add(severityLabel);
+
+        //Severity Buttons
+        JRadioButton oneRadioButton = new JRadioButton("1");
+        oneRadioButton.setBounds(contentPane.getWidth() / 4 - 100, contentPane.getHeight() / 2, 20, 40);
+        oneRadioButton.setVerticalTextPosition(JRadioButton.BOTTOM);
+        oneRadioButton.setHorizontalTextPosition(JRadioButton.CENTER);
+        oneRadioButton.setOpaque(false);
+        contentPane.add(oneRadioButton);
+
+        JRadioButton twoRadioButton = new JRadioButton("2");
+        twoRadioButton.setBounds(contentPane.getWidth() / 4 - 60, contentPane.getHeight() / 2, 20, 40);
+        twoRadioButton.setVerticalTextPosition(JRadioButton.BOTTOM);
+        twoRadioButton.setHorizontalTextPosition(JRadioButton.CENTER);
+        twoRadioButton.setOpaque(false);
+        contentPane.add(twoRadioButton);
+
+        JRadioButton threeRadioButton = new JRadioButton("3");
+        threeRadioButton.setBounds(contentPane.getWidth() / 4 - 20, contentPane.getHeight() / 2, 20, 40);
+        threeRadioButton.setVerticalTextPosition(JRadioButton.BOTTOM);
+        threeRadioButton.setHorizontalTextPosition(JRadioButton.CENTER);
+        threeRadioButton.setSelected(true);
+        threeRadioButton.setOpaque(false);
+        contentPane.add(threeRadioButton);
+
+        JRadioButton fourRadioButton = new JRadioButton("4");
+        fourRadioButton.setBounds(contentPane.getWidth() / 4 + 20, contentPane.getHeight() / 2, 20, 40);
+        fourRadioButton.setVerticalTextPosition(JRadioButton.BOTTOM);
+        fourRadioButton.setHorizontalTextPosition(JRadioButton.CENTER);
+        fourRadioButton.setOpaque(false);
+        contentPane.add(fourRadioButton);
+
+        JRadioButton fiveRadioButton = new JRadioButton("5");
+        fiveRadioButton.setBounds(contentPane.getWidth() / 4 + 60, contentPane.getHeight() / 2, 20, 40);
+        fiveRadioButton.setVerticalTextPosition(JRadioButton.BOTTOM);
+        fiveRadioButton.setHorizontalTextPosition(JRadioButton.CENTER);
+        fiveRadioButton.setOpaque(false);
+        contentPane.add(fiveRadioButton);
+
+        ButtonGroup severityButtonGroup = new ButtonGroup();
+        severityButtonGroup.add(oneRadioButton);
+        severityButtonGroup.add(twoRadioButton);
+        severityButtonGroup.add(threeRadioButton);
+        severityButtonGroup.add(fourRadioButton);
+        severityButtonGroup.add(fiveRadioButton);
+
+        //Condition History Label
+        JLabel historyLabel = new JLabel("Condition History");
+        historyLabel.setBounds(contentPane.getWidth() * 3 / 4 - 150, contentPane.getHeight() / 6 - 40, 200, 14);
+        contentPane.add(historyLabel);
+
+        //Condition History Scrollpane
+        HealthCareConditionEntry[] entries;
+        int conditionEntries = 0;
+        try {
+            entries = BackEndManager.sharedManager().getHealthConditionEntries(patientAccountid);
+            conditionEntries = entries.length;
+
+            //Create inner grid pane
+            JPanel gridPane;
+            if(conditionEntries <= 8) {
+                gridPane = new JPanel(new GridLayout(9, 1));
+            }else {
+                gridPane = new JPanel(new GridLayout(conditionEntries, 1));
+            }
+
+            //Create JScrollpane
+            JScrollPane scrollPane = new JScrollPane(gridPane,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 + 20, contentPane.getHeight() / 6, contentPane.getWidth() / 2 - 40, 400);
+
+            for(int i=0; i < conditionEntries; i++) {
+
+                JPanel entryPane = new JPanel();
+                entryPane.setBackground(panelColor);
+                entryPane.setBorder(BorderFactory.createRaisedBevelBorder());
+
+                JTextArea entryArea = new JTextArea(2, 20);
+                entryArea.setText(entries[i].info);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                entryPane.add(entryArea);
+
+                gridPane.add(entryPane);
+            }
+
+            contentPane.add(scrollPane);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Back button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Return to dashboard
+                ReturnToCurrentDashboard(accountid,dashboardType);
+            }
+        });
+        backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
+
+        contentPane.add(backButton);
+
+        JLabel invalidinputLabel = new JLabel("No ailment selected");
+        invalidinputLabel.setForeground(Color.RED);
+        invalidinputLabel.setBounds(contentPane.getWidth() / 2 - 280, contentPane.getHeight() / 2 + 150, 150, 30);
+        invalidinputLabel.setHorizontalTextPosition(JLabel.RIGHT);
+
+        //Update button
+        JButton updateButton = new JButton("Update");
+        updateButton.setToolTipText("Makes new entry in Health Condition Log.");
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                if (ailmentList.getSelectedIndex() != 0) {
+                    int severityNum;
+
+                    if(oneRadioButton.isSelected()){
+                        severityNum = 1;
+                    }else if(twoRadioButton.isSelected()){
+                        severityNum = 2;
+                    }else if(threeRadioButton.isSelected()){
+                        severityNum = 3;
+                    }else if(fourRadioButton.isSelected()){
+                        severityNum = 4;
+                    }else{
+                        severityNum = 5;
+                    }
+
+                    //Create entry
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                    Calendar cal = Calendar.getInstance();
+                    try {
+                        BackEndManager.sharedManager().createHealthConditionEntry(new HealthCareConditionEntry(patientAccountid,"Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    //Reshow page
+                    ShowPatientHealthConditions(accountid, dashboardType, patientAccountid);
+                }else{
+                    //Display necessary field entry
+                    contentPane.remove(invalidinputLabel);
+
+                    contentPane.add(invalidinputLabel);
+
+                    contentPane.revalidate();
+                    contentPane.repaint();
+                }
+            }
+        });
+        updateButton.setBounds(contentPane.getWidth() / 2 - 280, contentPane.getHeight() / 2 + 200, 100, 30);
+
+        contentPane.add(updateButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
     public void ReturnToCurrentDashboard(int accountid, int dashboardType){
         switch(dashboardType){
             case (0):
@@ -1099,10 +1486,10 @@ public class WindowManager extends JFrame {
                 ShowDoctorDashboard(accountid);
                 break;
             case(2):
-                //ShowNurseDashboard(accountid);
+                ShowHSPDashboard(accountid);
                 break;
             case(3):
-                //ShowLabtechDashboard(accountid);
+                ShowLabtechDashboard(accountid);
                 break;
             default:
                 System.out.print("No dashboard of type:" + dashboardType);

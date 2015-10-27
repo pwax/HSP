@@ -573,7 +573,7 @@ public class BackEndManager {
 
             if (set.next()){
                 accountType = set.getInt("accountType");
-                System.out.println("account type: "+accountType);
+                System.out.println("account type: " + accountType);
 
             }else{
                 System.out.println("no account type for such id");
@@ -586,6 +586,60 @@ public class BackEndManager {
         }
 
         return accountType;
+    }
+
+    public MedicalHistory getMedicalHistory(int userID){
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting user medical history");
+
+            String sql = "SELECT userID, info FROM MedicalHistory WHERE userID = "+ "'"+userID+"'";
+
+            ResultSet set = statement.executeQuery(sql);
+
+            set.next();
+
+
+            int userID1 = set.getInt("userID");
+            String info = set.getString("info");
+
+            System.out.println(userID + " " + info);
+
+            MedicalHistory medicalHistory = new MedicalHistory(userID1, info);
+
+            return medicalHistory;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public void setMedicalHistory(MedicalHistory medicalHistory){
+
+
+        try {
+            System.out.println("updating ");
+
+            String sql = "UPDATE MedicalHistory SET info = "+"'"+medicalHistory.info+"'"+"WHERE userID = "+medicalHistory.userID;
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+
+
+        }catch (Exception e){
+            System.out.println("failed to updated medical history with error: ");
+            e.printStackTrace();
+        }
+
+
     }
 
 

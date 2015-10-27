@@ -106,6 +106,25 @@ public class BackEndManager {
                 Statement statement = userConnection.createStatement();
                 statement.executeUpdate(sql);
 
+                try {
+
+                    int userID = this.getUserID(username);
+
+                    String sql1 = "INSERT INTO MedicalHistory VALUES (0, " + userID + ", ' ')";
+                    System.out.println(sql1);
+
+                    Connection userConnection1 = getUserConnection();
+
+                    Statement statement1 = userConnection1.createStatement();
+                    statement.executeUpdate(sql1);
+
+
+
+                }catch (Exception e){
+                    System.out.println("failed to insert records with error: ");
+                    e.printStackTrace();
+                }
+
 
             }catch (Exception e){
                 System.out.println("failed to insert records with error: ");

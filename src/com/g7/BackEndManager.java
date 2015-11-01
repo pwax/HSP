@@ -702,7 +702,7 @@ public class BackEndManager {
         try {
             System.out.println("removing prescription id: '" + prescriptionID +"'");
 
-            String sql = "DELETE FROM Prescriptions WHERE id=" + "'" + prescriptionID + "'";
+            String sql = "DELETE FROM Prescriptions WHERE id='" + prescriptionID + "'";
             System.out.println(sql);
 
             Connection userConnection = getUserConnection();
@@ -711,6 +711,133 @@ public class BackEndManager {
             statement.executeUpdate(sql);
         }catch (Exception e){
             System.out.println("failed to remove prescription with error: ");
+            e.printStackTrace();
+        }
+    }
+
+    public LabWork[] getLabWorkList(int userID){
+
+        //Return all labworks of the given user's labwork list
+
+        LabWork[] labWorks;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting labworks");
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM LabWork WHERE userID = '"+userID+"'";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+                System.out.println(count +" labworks");
+
+                labWorks = new LabWork[count];
+
+                String sql = "SELECT id, userID, info FROM LabWork WHERE userID = '"+userID+"'";
+
+                ResultSet labworkSet = statement.executeQuery(sql);
+
+                labworkSet.next();
+
+                for (int i = 0; i < count; i++) {
+                    int labworkIDFromServer = labworkSet.getInt("id");
+                    int userIDFromServer = labworkSet.getInt("userID");
+                    String info = labworkSet.getString("info");
+
+                    LabWork labWork = new LabWork(userIDFromServer, info, labworkIDFromServer);
+
+                    labWorks[i] = labWork;
+
+                    labworkSet.next();
+                }
+            }else {
+                System.out.println("no prescriptions");
+                labWorks = null;
+            }
+
+            return labWorks;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            labWorks = null;
+            return labWorks;
+        }
+    }
+
+    public void createLabWork(LabWork labWork){
+        try {
+            System.out.println("inserting new labWork into LabWork table");
+
+            int userID = labWork.userID;
+            String info = labWork.info;
+
+            String sql = "INSERT INTO LabWork VALUES ('0', '"+userID+"', '"+info+"')";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+        }catch (Exception e){
+            System.out.println("failed to create labWork with error: ");
+            e.printStackTrace();
+        }
+    }
+
+    public void updateLabWork(LabWork labWork){
+        try {
+            System.out.println("updating info of LabWork id: '" + labWork.labWorkID +"'");
+
+            String sql = "UPDATE LabWork SET info = '" + labWork.info + "' WHERE id = " + labWork.labWorkID;
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+        }catch (Exception e){
+            System.out.println("failed to update labWork with error: ");
+            e.printStackTrace();
+        }
+    }
+
+    public String getLabWork(int labWorkID){
+        try {
+            String sql = "SELECT info FROM LabWork WHERE id = '" + labWorkID + "'";
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+
+            ResultSet set = statement.executeQuery(sql);
+
+            if (set.next()) {
+                return set.getString("info");
+            }
+            System.out.println("failed to get labWork info");
+            return null;
+        }catch(Exception e){
+            System.out.println("failed to connect to get labWork info with error: ");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void removeLabWork(int labworkID){
+        try {
+            System.out.println("removing labwork id: '" + labworkID +"'");
+
+            String sql = "DELETE FROM LabWork WHERE id='" + labworkID + "'";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+        }catch (Exception e){
+            System.out.println("failed to remove labwork with error: ");
             e.printStackTrace();
         }
     }
@@ -760,6 +887,92 @@ public class BackEndManager {
             patients = null;
 
             return patients;
+        }
+    }
+
+    public void createAlert(Alert alert){
+        try {System.out.println("inserting new alert into Alerts table");
+
+            int userID = alert.userID;
+            String info = alert.info;
+
+            String sql = "INSERT INTO Alerts VALUES ('0', '"+userID+"', '"+info+"')";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+        }catch (Exception e){
+            System.out.println("failed to create alert with error: ");
+            e.printStackTrace();
+        }
+    }
+
+    public Alert[] getAlerts(){
+        //Return all alerts
+
+        Alert[] alerts;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting alerts");
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Alerts";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+                System.out.println(count +" alerts");
+
+                alerts = new Alert[count];
+
+                String sql = "SELECT id, userID, info FROM Alerts";
+
+                ResultSet alertSet = statement.executeQuery(sql);
+
+                alertSet.next();
+
+                for (int i = 0; i < count; i++) {
+                    int labworkIDFromServer = alertSet.getInt("id");
+                    int userIDFromServer = alertSet.getInt("userID");
+                    String info = alertSet.getString("info");
+
+                    Alert alert = new Alert(userIDFromServer, info, labworkIDFromServer);
+
+                    alerts[i] = alert;
+
+                    alertSet.next();
+                }
+            }else {
+                System.out.println("no prescriptions");
+                alerts = null;
+            }
+
+            return alerts;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            alerts = null;
+            return alerts;
+        }
+    }
+
+    public void removeAlert(int alertID){
+        try {
+            System.out.println("removing alert id: '" + alertID +"'");
+
+            String sql = "DELETE FROM Alerts WHERE id='" + alertID + "'";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+        }catch (Exception e){
+            System.out.println("failed to remove alert with error: ");
+            e.printStackTrace();
         }
     }
 

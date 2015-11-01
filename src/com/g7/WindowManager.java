@@ -101,7 +101,7 @@ public class WindowManager extends JFrame {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    if(passwordMatches){//passwordWorks){
+                    if(passwordMatches){
                         //Get ID
                         int id = 0;
                         try {
@@ -116,8 +116,13 @@ public class WindowManager extends JFrame {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        //Show dashboard
-                        ReturnToCurrentDashboard(id, accountType);
+                        if(accountType != 1) {
+                            //Show dashboard
+                            ReturnToCurrentDashboard(id, accountType);
+                        }else{
+                            //Go to alerts page
+                            ShowAllAlerts(id);
+                        }
                     }else{
                         contentPane.add(invalidinputLabel);
                         contentPane.repaint();
@@ -503,123 +508,6 @@ public class WindowManager extends JFrame {
         contentPane.repaint();
     }
 
-    //Show Edit Info page
-    public void ShowEditInfo(int accountid, int dashboardType){
-        contentPane.removeAll();
-
-        //First name
-        JLabel fnameLabel = new JLabel("First Name");
-        fnameLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 200, 140, 14);
-        contentPane.add(fnameLabel);
-
-        JTextField fnameField = new JTextField();
-        fnameField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 200, 116, 20);
-        contentPane.add(fnameField);
-        fnameField.setColumns(10);
-
-        //Last Name
-        JLabel lnameLabel = new JLabel("Last Name");
-        lnameLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 160, 140, 14);
-        contentPane.add(lnameLabel);
-
-        JTextField lnameField = new JTextField();
-        lnameField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 160, 116, 20);
-        contentPane.add(lnameField);
-        lnameField.setColumns(10);
-
-        //Password
-        JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 120, 140, 14);
-        contentPane.add(passwordLabel);
-
-        JTextField passwordField = new JPasswordField();
-        passwordField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 120, 116, 20);
-        contentPane.add(passwordField);
-
-        //Confirm password
-        JLabel confirmPasswordLabel = new JLabel("Confirm Password");
-        confirmPasswordLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 80, 140, 14);
-        contentPane.add(confirmPasswordLabel);
-
-        JTextField confirmPasswordField = new JPasswordField();
-        confirmPasswordField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 80, 116, 20);
-        contentPane.add(confirmPasswordField);
-
-        //Email
-        JLabel emailLabel = new JLabel("Email");
-        emailLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 - 40, 140, 14);
-        contentPane.add(emailLabel);
-
-        JTextField emailField = new JTextField();
-        emailField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 - 40, 116, 20);
-        contentPane.add(emailField);
-        emailField.setColumns(10);
-
-        //Phone
-        JLabel phoneLabel = new JLabel("Phone");
-        phoneLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2, 140, 14);
-        contentPane.add(phoneLabel);
-
-        JTextField phoneField = new JTextField();
-        phoneField.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2, 116, 20);
-        contentPane.add(phoneField);
-        phoneField.setColumns(10);
-
-        //Account Type
-        JLabel accountTypeLabel = new JLabel("Account Type:");
-        accountTypeLabel.setBounds(contentPane.getWidth() / 2 - 140, contentPane.getHeight() / 2 + 40, 140, 14);
-        contentPane.add(accountTypeLabel);
-
-        JRadioButton patientRadioButton = new JRadioButton("Patient");
-        patientRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 40, 116, 20);
-        contentPane.add(patientRadioButton);
-
-        JRadioButton doctorRadioButton = new JRadioButton("Doctor");
-        doctorRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 70, 116, 20);
-        contentPane.add(doctorRadioButton);
-
-        JRadioButton nurseRadioButton = new JRadioButton("Nurse");
-        nurseRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 100, 116, 20);
-        contentPane.add(nurseRadioButton);
-
-        JRadioButton labtechRadioButton = new JRadioButton("Lab Tech");
-        labtechRadioButton.setBounds(contentPane.getWidth() / 2 + 10, contentPane.getHeight() / 2 + 130, 116, 20);
-        contentPane.add(labtechRadioButton);
-
-        ButtonGroup accountTypeGroup = new ButtonGroup();
-        accountTypeGroup.add(patientRadioButton);
-        accountTypeGroup.add(doctorRadioButton);
-        accountTypeGroup.add(nurseRadioButton);
-        accountTypeGroup.add(labtechRadioButton);
-
-        //Back button
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                //Return to dashboard
-                ReturnToCurrentDashboard(accountid, dashboardType);
-            }
-        });
-        backButton.setBounds((contentPane.getWidth() / 9) * 1, (contentPane.getHeight() / 7) * 6, 100, 25);
-        contentPane.add(backButton);
-
-        //Accept Changes
-        JButton acceptButton = new JButton("Accept");
-        acceptButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                //Save changes
-
-                //Return to dashboard
-                ReturnToCurrentDashboard(accountid, dashboardType);
-            }
-        });
-        acceptButton.setBounds((contentPane.getWidth() / 9) * 7, (contentPane.getHeight() / 7) * 6, 100, 25);
-        contentPane.add(acceptButton);
-
-        contentPane.revalidate();
-        contentPane.repaint();
-    }
-
     //Show Health Condition page
     public void ShowHealthCondition(int accountid){
         contentPane.removeAll();
@@ -774,8 +662,6 @@ public class WindowManager extends JFrame {
                         severityNum = 5;
                     }
 
-
-
                     //Create entry
                     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                     Calendar cal = Calendar.getInstance();
@@ -787,6 +673,14 @@ public class WindowManager extends JFrame {
 
 
                     if(severityNum == 5 || ailmentList.getSelectedIndex() > 0 && ailmentList.getSelectedIndex() < 7){
+                        //Create Alert
+                        try {
+                            BackEndManager.sharedManager().createAlert(new Alert(accountid,"Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum,-1));
+                        } catch (Exception e) {
+                            System.out.println("Failed maknig new alert");
+                            e.printStackTrace();
+                        }
+
                         //Show Alert
                         ShowAlert(accountid);
                     }else {
@@ -820,13 +714,13 @@ public class WindowManager extends JFrame {
         //Apply changes to content panel
 
         //Title
-        JTextArea warning = new JTextArea("You have a serious health risk.\nCall 911 or get help immediately!");
+        JTextArea warning = new JTextArea("You have a serious health risk.\nDoctor's have been notified of your condition.\nCall 911 or go to the hospital now!");
         warning.setWrapStyleWord(true);
         warning.setLineWrap(true);
         warning.setOpaque(false);
         warning.setEditable(false);
         warning.setFocusable(false);
-        warning.setBounds(contentPane.getWidth() / 2 - 75, contentPane.getHeight() / 2 - 100, 200, 100);
+        warning.setBounds(contentPane.getWidth() / 2 - 100, contentPane.getHeight() / 2 - 100, 250, 100);
         contentPane.add(warning);
 
         JButton returnButton = new JButton("Okay");
@@ -1082,15 +976,6 @@ public class WindowManager extends JFrame {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //TODO
-                //Save changes
-                /*try {
-                    BackEndManager.sharedManager().setMedicalHistory(patientAccountid);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                   */
-
                 //Return to dashboard
                 ShowPatientDashboard(accountid);
             }
@@ -1098,6 +983,94 @@ public class WindowManager extends JFrame {
         backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
 
         contentPane.add(backButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show all Alerts page
+    //Only for doctors
+    public void ShowAllAlerts(int accountid){
+        contentPane.removeAll();
+
+        //Alert Label
+        JLabel prescriptionLabel = new JLabel("Alerts");
+        prescriptionLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 250, 50);
+        contentPane.add(prescriptionLabel);
+
+        Alert[] alertList;
+
+        try {
+            alertList = BackEndManager.sharedManager().getAlerts();
+        } catch (Exception e) {
+            e.printStackTrace();
+            alertList = null;
+        }
+
+        if(alertList != null && alertList.length != 0) {
+            //Create inner grid pane
+            int alertCount = alertList.length;
+
+            JPanel gridPane;
+            if (alertCount <= 5) {
+                gridPane = new JPanel(new GridLayout(6, 1));
+            } else {
+                gridPane = new JPanel(new GridLayout(alertCount, 1));
+            }
+
+            //Alert List Area
+            JScrollPane scrollPane = new JScrollPane(gridPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 200, 740, 370);
+
+            for (int i = 0; i < alertCount; i++) {
+                JPanel resultsPane = new JPanel();
+                resultsPane.setBackground(panelColor);
+                resultsPane.setBorder(BorderFactory.createRaisedBevelBorder());
+                resultsPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
+
+                JTextArea entryArea = new JTextArea(2,20);
+                entryArea.setText(alertList[i].info);
+                entryArea.setToolTipText(alertList[i].info);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                entryArea.setMinimumSize(new Dimension(scrollPane.getWidth() / 2, 20));
+                try {
+                    entryArea.setText(BackEndManager.sharedManager().getName(alertList[i].userID) + "\n" + alertList[i].info);
+                } catch (Exception e) {
+                    entryArea.setText("Unknown patient\n" + alertList[i].info);
+                    e.printStackTrace();
+                }
+                resultsPane.add(entryArea);
+
+                //Remove Alert
+                JButton removeAlertButton = new JButton("Remove");
+                removeAlertButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                removeAlertButton.putClientProperty("alertID", alertList[i].alertID);
+                removeAlertButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Remove Alert
+                        try {
+                            BackEndManager.sharedManager().removeAlert((int) removeAlertButton.getClientProperty("alertID"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //Reshow page
+                        ShowAllAlerts(accountid);
+                    }
+                });
+                resultsPane.add(removeAlertButton);
+
+                gridPane.add(resultsPane);
+            }
+            contentPane.add(scrollPane);
+        }else{
+            //No more alerts
+            ShowDoctorDashboard(accountid);
+        }
 
         contentPane.revalidate();
         contentPane.repaint();
@@ -1726,6 +1699,17 @@ public class WindowManager extends JFrame {
     public void ShowPatientPrescriptions(int accountid, int dashboardType, int patientAccountid){
         contentPane.removeAll();
 
+        //Prescription Label
+        JLabel prescriptionLabel = null;
+        try {
+            prescriptionLabel = new JLabel("Viewing prescriptions for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+        } catch (Exception e) {
+            prescriptionLabel = new JLabel("Viewing prescriptions for patient.");
+            e.printStackTrace();
+        }
+        prescriptionLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 250, 50);
+        contentPane.add(prescriptionLabel);
+
         Prescription[] prescriptionList;
 
         try {
@@ -1757,11 +1741,7 @@ public class WindowManager extends JFrame {
                 resultsPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
 
                 JTextArea entryArea = new JTextArea(2,20);
-               // if(prescriptionList[i].info.length() >= 300){
-                //    entryArea.setText("Hover for full info...");
-                //}else {
-                    entryArea.setText(prescriptionList[i].info);
-               //}
+                entryArea.setText(prescriptionList[i].info);
                 entryArea.setToolTipText(prescriptionList[i].info);
                 entryArea.setWrapStyleWord(true);
                 entryArea.setLineWrap(true);
@@ -1902,7 +1882,277 @@ public class WindowManager extends JFrame {
 
     //Show Patient Lab Results
     public void ShowPatientLabRecords(int accountid, int dashboardType, int patientAccountid){
+        contentPane.removeAll();
 
+        //Lab Work Label
+        JLabel labworkLabel = null;
+        try {
+            labworkLabel = new JLabel("Viewing lab records for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+        } catch (Exception e) {
+            labworkLabel = new JLabel("Viewing lab records for patient.");
+            e.printStackTrace();
+        }
+        labworkLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 250, 50);
+        contentPane.add(labworkLabel);
+
+        LabWork[] labworkList;
+
+        try {
+            labworkList = BackEndManager.sharedManager().getLabWorkList(patientAccountid);
+        } catch (Exception e) {
+            e.printStackTrace();
+            labworkList = null;
+        }
+
+        if(labworkList != null) {
+            //Create inner grid pane
+            int labworkCount = labworkList.length;
+
+            JPanel gridPane;
+            if (labworkCount <= 5) {
+                gridPane = new JPanel(new GridLayout(6, 1));
+            } else {
+                gridPane = new JPanel(new GridLayout(labworkCount, 1));
+            }
+
+            //Prescriptions List Area
+            JScrollPane scrollPane = new JScrollPane(gridPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 200, 740, 370);
+
+            for (int i = 0; i < labworkCount; i++) {
+                JPanel resultsPane = new JPanel();
+                resultsPane.setBackground(panelColor);
+                resultsPane.setBorder(BorderFactory.createRaisedBevelBorder());
+                resultsPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
+
+                JTextArea entryArea = new JTextArea(2,20);
+                entryArea.setText(labworkList[i].info);
+                entryArea.setToolTipText(labworkList[i].info);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                entryArea.setMinimumSize(new Dimension(scrollPane.getWidth() / 2, 20));
+                resultsPane.add(entryArea);
+
+                //Print Lab Record Button
+                JButton printLabRecordButton = new JButton("Print");
+                printLabRecordButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                printLabRecordButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Print Prescription Info
+                        try {
+                            entryArea.print();
+                        } catch (PrinterException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                //No Anti Perms
+                resultsPane.add(printLabRecordButton);
+
+                //Update Lab Record
+                JButton updateLabRecordButton = new JButton("Update");
+                updateLabRecordButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                updateLabRecordButton.putClientProperty("labWorkID", labworkList[i].labWorkID);
+                updateLabRecordButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Update Lab Record page
+                        ShowUpdateLabRecord(accountid, dashboardType, patientAccountid, (int) updateLabRecordButton.getClientProperty("labWorkID"));
+                    }
+                });
+                //Anti Perms
+                //Not for: Doctor
+                if(dashboardType == 1){
+                    updateLabRecordButton.setEnabled(false);
+                }
+                resultsPane.add(updateLabRecordButton);
+                
+                //Update Lab Record
+                JButton deleteLabRecordButton = new JButton("Delete");
+                deleteLabRecordButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                deleteLabRecordButton.putClientProperty("labWorkID", labworkList[i].labWorkID);
+                deleteLabRecordButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        try {
+                            BackEndManager.sharedManager().removeLabWork((int) deleteLabRecordButton.getClientProperty("labWorkID"));
+                        } catch (Exception e) {
+                            System.out.println("Error connecting for deleteing labwork");
+                            e.printStackTrace();
+                        }
+
+                        //Reshow Lab Record Page
+                        ShowPatientLabRecords(accountid,dashboardType,patientAccountid);
+                    }
+                });
+                //Anti Perms
+                //Not for: Doctor
+                if(dashboardType == 1){
+                    deleteLabRecordButton.setEnabled(false);
+                }
+                resultsPane.add(deleteLabRecordButton);
+
+                gridPane.add(resultsPane);
+            }
+            contentPane.add(scrollPane);
+        }
+
+        //Create Lab Record Button
+
+        JButton createLabRecordButton;
+
+        //if doctor viewing
+        if(dashboardType == 1){
+            //Only request
+            createLabRecordButton = new JButton("Request New Lab");
+        }else{
+            //Actually make
+            createLabRecordButton = new JButton("Create New Entry");
+        }
+        createLabRecordButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 - 240, 150, 30);
+        createLabRecordButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                if (dashboardType == 3) {
+                    //Show Create Lab Record Page
+                    ShowCreateLabRecord(accountid, dashboardType, patientAccountid);
+                } else {
+                    //Make new Lab Work with default text
+                    try {
+                        BackEndManager.sharedManager().createLabWork(new LabWork(patientAccountid, "New Lab Requested\nDoctor: " + BackEndManager.sharedManager().getName(accountid), -1));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ShowPatientLabRecords(accountid, dashboardType, patientAccountid);
+                }
+            }
+        });
+        //No Anti Perms
+        contentPane.add(createLabRecordButton);
+
+        //Back Button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Return to dashboard
+                ReturnToCurrentDashboard(accountid, dashboardType);
+            }
+        });
+        backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
+
+        contentPane.add(backButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Create Prescription
+    public void ShowCreateLabRecord(int accountid, int dashboardType, int patientAccountid){
+        contentPane.removeAll();
+
+        //Prescription Label
+        JLabel prescriptionLabel = null;
+        try {
+            prescriptionLabel = new JLabel("Creating new lab record for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+        } catch (Exception e) {
+            prescriptionLabel = new JLabel("Creating new lab record for patient.");
+            e.printStackTrace();
+        }
+        prescriptionLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 250, 50);
+        contentPane.add(prescriptionLabel);
+
+        //Lab Record Text Area
+        JTextArea labWorkTextArea = new JTextArea();
+        labWorkTextArea.setWrapStyleWord(true);
+        labWorkTextArea.setLineWrap(true);
+        labWorkTextArea.setFocusable(true);
+        labWorkTextArea.setEditable(true);
+        labWorkTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+        labWorkTextArea.setText("Enter lab info here...");
+
+        //Scroll Pane
+        JScrollPane scrollPane = new JScrollPane(labWorkTextArea);
+        scrollPane.setBounds(20, contentPane.getHeight() / 2 - 200, contentPane.getWidth() - 40, 375);
+
+        contentPane.add(scrollPane);
+
+        //Create Button
+        JButton createButton = new JButton("Create and Exit");
+        createButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Save changes
+                try {
+                    BackEndManager.sharedManager().createLabWork(new LabWork(patientAccountid, labWorkTextArea.getText(), -1));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                //Return Show Lab Records page
+                ShowPatientLabRecords(accountid, dashboardType, patientAccountid);
+            }
+        });
+        createButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 150, 30);
+        contentPane.add(createButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Update Lab Record Page
+    public void ShowUpdateLabRecord(int accountid, int dashboardType, int patientAccountid, int labrecordID){
+        contentPane.removeAll();
+
+        //Labrecord Label
+        JLabel labrecordLabel = null;
+        try {
+            labrecordLabel = new JLabel("Updating lab record for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+        } catch (Exception e) {
+            labrecordLabel = new JLabel("Updating lab record for patient.");
+            e.printStackTrace();
+        }
+        labrecordLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 250, 50);
+        contentPane.add(labrecordLabel);
+
+        //Lab Record Text Area
+        JTextArea labWorkTextArea = new JTextArea();
+        labWorkTextArea.setWrapStyleWord(true);
+        labWorkTextArea.setLineWrap(true);
+        labWorkTextArea.setFocusable(true);
+        labWorkTextArea.setEditable(true);
+        labWorkTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+        try {
+            labWorkTextArea.setText(BackEndManager.sharedManager().getLabWork(labrecordID));
+        } catch (Exception e) {
+            labWorkTextArea.setText("Error reading lab info to update");
+            e.printStackTrace();
+        }
+
+        //Scroll Pane
+        JScrollPane scrollPane = new JScrollPane(labWorkTextArea);
+        scrollPane.setBounds(20, contentPane.getHeight() / 2 - 200, contentPane.getWidth() - 40, 375);
+
+        contentPane.add(scrollPane);
+
+        //Update Button
+        JButton updateButton = new JButton("Update and Exit");
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Save changes to existing labwork
+                try {
+                    BackEndManager.sharedManager().updateLabWork(new LabWork(patientAccountid, labWorkTextArea.getText(), labrecordID));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                //Return Show Prescriptions page
+                ShowPatientLabRecords(accountid, dashboardType, patientAccountid);
+            }
+        });
+        updateButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 150, 30);
+        contentPane.add(updateButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
     }
 
     //Returns to correct dashboard

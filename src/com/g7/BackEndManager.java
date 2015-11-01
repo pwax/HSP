@@ -106,7 +106,6 @@ public class BackEndManager {
                 Statement statement = userConnection.createStatement();
                 statement.executeUpdate(sql);
 
-
             }catch (Exception e){
                 System.out.println("failed to insert records with error: ");
                 e.printStackTrace();
@@ -216,6 +215,52 @@ public class BackEndManager {
 
     }
 
+    public String getName(int userid){
+        String name = "";
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("Getting firstName for user");
+
+            String sql = "SELECT firstName, accountType FROM Users WHERE id = '"+userid+"'";
+
+            ResultSet set = statement.executeQuery(sql);
+
+            if (set.next()){
+                System.out.println("found name with accounttype: " + set.getInt("accountType"));
+                switch(set.getInt("accountType")){
+                    case 0:
+                        name = set.getString("firstName");
+                        break;
+                    case 1:
+                        name = "Dr. " + set.getString("firstName");
+                        break;
+                    case 2:
+                        name = "HSP " + set.getString("firstName");
+                        break;
+                    case 3:
+                        name = "Lab Tech" + set.getString("firstName");
+                        break;
+                    default:
+                        name = "Mr.noname";
+                        break;
+                }
+            }else{
+                System.out.println("no id for such user");
+                name = "";
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            name = "";
+        }
+
+        return name;
+
+    }
+
     public boolean isPassword(String username, String password){
 
         //if username-> password on data base matches, return true, if not return false
@@ -266,6 +311,39 @@ public class BackEndManager {
 
     }
 
+    public Doctor[] getDoctorList(){
+        try {
+            Doctor[] doctors = null;
+
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Users WHERE accountType = 1";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+
+                doctors = new Doctor[count];
+
+                String sql = "SELECT id, firstName FROM Users WHERE accountType = 1";
+
+                ResultSet entrySet = statement.executeQuery(sql);
+
+                entrySet.next();
+
+                for (int i = 0; i < count; i++) {
+                    doctors[i] = new Doctor(entrySet.getInt("id"),entrySet.getString("firstName"));
+                    entrySet.next();
+                }
+            }
+            return doctors;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public HealthCareConditionEntry[] getHealthConditionEntries(int userID){
 
         //Return all hcc entries of the given user's hcc entries
@@ -290,8 +368,6 @@ public class BackEndManager {
 
                 ResultSet entrySet = statement.executeQuery(sql);
 
-                //TODO i moved the entry.next() inside the forloop to make it iterate once each time,
-                //considering we know the total count of rows and shouldn't go over
                 entrySet.next();
 
                 for (int i = 0; i < count; i++) {
@@ -320,6 +396,31 @@ public class BackEndManager {
             entries = null;
             return entries;
         }
+    }
+
+    public void createHealthConditionEntry(HealthCareConditionEntry entry){
+
+        try {
+            System.out.println("inserting records into user table");
+
+            int userID = entry.userID;
+            String info = entry.info;
+
+            String sql = "INSERT INTO HealthCareConditions " +
+                    "VALUES ('0',"+ "'"+userID+"', "+"'"+info+"'" +")";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+
+
+        }catch (Exception e){
+            System.out.println("failed to insert records with error: ");
+            e.printStackTrace();
+        }
+
     }
 
     public Appointment[] getAppointmentList(int userID){
@@ -399,7 +500,7 @@ public class BackEndManager {
 
                 appointments = new Appointment[count];
 
-                String sql = "SELECT id, userID, info FROM Appointments WHERE doctorID = "+"'"+doctorID+"'";
+                String sql = "SELECT id, userID, info, doctorID FROM Appointments WHERE doctorID = "+"'"+doctorID+"'";
 
                 ResultSet appointmentSet = statement.executeQuery(sql);
 
@@ -414,7 +515,7 @@ public class BackEndManager {
 
                     System.out.println(userIDFromServer + " " + info);
 
-                    Appointment appointment = new Appointment(userIDFromServer, info, appointmentIDFromServer, doctorIDFromServer);  //TODO update Appointment here with appropriate doctor field once created
+                    Appointment appointment = new Appointment(userIDFromServer, info, appointmentIDFromServer, doctorIDFromServer);
 
                     appointments[i] = appointment;
 
@@ -436,35 +537,10 @@ public class BackEndManager {
 
     }
 
-    public void createHealthConditionEntry(HealthCareConditionEntry entry){
-
-        try {
-            System.out.println("inserting records into user table");
-
-            int userID = entry.userID;
-            String info = entry.info;
-
-            String sql = "INSERT INTO HealthCareConditions " +
-                    "VALUES ('0',"+ "'"+userID+"', "+"'"+info+"'" +")";
-            System.out.println(sql);
-
-            Connection userConnection = getUserConnection();
-
-            Statement statement = userConnection.createStatement();
-            statement.executeUpdate(sql);
-
-
-        }catch (Exception e){
-            System.out.println("failed to insert records with error: ");
-            e.printStackTrace();
-        }
-
-    }
-
     public void createAppointment(Appointment appointment){
 
         try {
-            System.out.println("inserting records into user table");
+            System.out.println("inserting new appointment into appointment table");
 
             int userID = appointment.userID;
             String info = appointment.info;
@@ -479,7 +555,7 @@ public class BackEndManager {
             Statement statement = userConnection.createStatement();
             statement.executeUpdate(sql);
         }catch (Exception e){
-            System.out.println("failed to insert records with error: ");
+            System.out.println("failed to insert appointment with error: ");
             e.printStackTrace();
         }
 
@@ -502,7 +578,141 @@ public class BackEndManager {
             System.out.println("failed to remove appointment with error: ");
             e.printStackTrace();
         }
+    }
 
+    public String getMedicalHistory(int userID){
+
+        String medhis = "";
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting user medical history");
+
+            String sql = "SELECT medicalHistory FROM Users WHERE id = '"+userID+"'";
+
+            ResultSet set = statement.executeQuery(sql);
+
+            if (set.next()) {
+                medhis = set.getString("medicalHistory");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Not connecting to server");
+            medhis = "No connection to server...";
+        }
+        return medhis;
+    }
+
+    public void setMedicalHistory(int userID, String medicalHistory){
+
+        try {
+
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("updating ");
+
+            String sql = "UPDATE Users SET medicalHistory = " + "'" + medicalHistory + "'" + "WHERE id = " + userID;
+            System.out.println(sql);
+
+            statement.executeUpdate(sql);
+
+        }catch (Exception e){
+            System.out.println("failed to updated medical history with error: ");
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public Prescription[] getPrescriptionList(int userID){
+
+        //Return all prescriptions of the given user's prescription list
+
+        Prescription[] prescriptions;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting prescriptions");
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Prescriptions WHERE userID = "+"'"+userID+"'";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+                System.out.println(count +" prescriptions");
+
+                prescriptions = new Prescription[count];
+
+                String sql = "SELECT id, userID, info FROM Prescriptions WHERE userID = "+"'"+userID+"'";
+
+                ResultSet prescriptionSet = statement.executeQuery(sql);
+
+                prescriptionSet.next();
+
+                for (int i = 0; i < count; i++) {
+                    int prescriptionIDFromServer = prescriptionSet.getInt("id");
+                    int userIDFromServer = prescriptionSet.getInt("userID");
+                    String info = prescriptionSet.getString("info");
+
+                    Prescription prescription = new Prescription(userIDFromServer, info, prescriptionIDFromServer);
+
+                    prescriptions[i] = prescription;
+
+                    prescriptionSet.next();
+                }
+            }else {
+                System.out.println("no prescriptions");
+                prescriptions = null;
+            }
+
+            return prescriptions;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            prescriptions = null;
+            return prescriptions;
+        }
+    }
+
+    public void createPrescription(Prescription prescription){
+        try {
+            System.out.println("inserting new prescription into prescriptions table");
+
+            int userID = prescription.userID;
+            String info = prescription.info;
+
+            String sql = "INSERT INTO Prescriptions VALUES ('0', '"+userID+"', '"+info+"')";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+        }catch (Exception e){
+            System.out.println("failed to insert prescription with error: ");
+            e.printStackTrace();
+        }
+    }
+
+    public void removePrescription(int prescriptionID){
+        try {
+            System.out.println("removing prescription id: '" + prescriptionID +"'");
+
+            String sql = "DELETE FROM Prescriptions WHERE id=" + "'" + prescriptionID + "'";
+            System.out.println(sql);
+
+            Connection userConnection = getUserConnection();
+
+            Statement statement = userConnection.createStatement();
+            statement.executeUpdate(sql);
+        }catch (Exception e){
+            System.out.println("failed to remove prescription with error: ");
+            e.printStackTrace();
+        }
     }
 
     public Patient[] searchPatients(String substring){
@@ -564,7 +774,7 @@ public class BackEndManager {
             System.out.println("getting account type from id");
 
             String sql = "SELECT accountType FROM Users WHERE id = "+"'"+userID+"'";
-            System.out.println(userID + "\n"+ sql);
+            System.out.println(userID + "\n" + sql);
 
             ResultSet set = statement.executeQuery(sql);
 
@@ -584,61 +794,4 @@ public class BackEndManager {
 
         return accountType;
     }
-
-    public MedicalHistory getMedicalHistory(int userID){
-
-        try {
-            Connection userConnection = getUserConnection();
-            Statement statement = userConnection.createStatement();
-
-            System.out.println("getting user medical history");
-
-            String sql = "SELECT userID, info FROM MedicalHistory WHERE userID = "+ "'"+userID+"'";
-
-            ResultSet set = statement.executeQuery(sql);
-
-            set.next();
-
-
-            int userID1 = set.getInt("userID");
-            String info = set.getString("info");
-
-            System.out.println(userID + " " + info);
-
-            MedicalHistory medicalHistory = new MedicalHistory(userID1, info);
-
-            return medicalHistory;
-
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-
-    public void setMedicalHistory(MedicalHistory medicalHistory){
-
-
-        try {
-            System.out.println("updating ");
-
-            String sql = "UPDATE MedicalHistory SET info = "+"'"+medicalHistory.info+"'"+"WHERE userID = "+medicalHistory.userID;
-            System.out.println(sql);
-
-            Connection userConnection = getUserConnection();
-
-            Statement statement = userConnection.createStatement();
-            statement.executeUpdate(sql);
-
-
-        }catch (Exception e){
-            System.out.println("failed to updated medical history with error: ");
-            e.printStackTrace();
-        }
-
-
-    }
-
-
-
 }

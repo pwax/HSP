@@ -10,6 +10,7 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.print.PrinterException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,9 +24,6 @@ public class WindowManager extends JFrame {
     private JPanel contentPane;
     private Color backgroundColor = new Color(211,216,255);
     private Color panelColor = new Color(228,255,214);
-
-    //DEBUG
-    private int test = 0;
 
     //Creates main window
     public WindowManager(){
@@ -241,6 +239,7 @@ public class WindowManager extends JFrame {
         medHistoryTextArea.setWrapStyleWord(true);
         medHistoryTextArea.setLineWrap(true);
         medHistoryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+        medHistoryTextArea.setText("No medical histroy.");
         contentPane.add(medHistoryTextArea);
 
         //Account Type
@@ -394,6 +393,7 @@ public class WindowManager extends JFrame {
 
                                 try {
                                     BackEndManager.sharedManager().registerNewUser(fnameField.getText(),lnameField.getText(),usernameField.getText(),passwordField.getText(),emailField.getText(),phoneField.getText(),accountType,ssnField.getText(),insuranceField.getText(),medHistoryTextArea.getText());
+                                    BackEndManager.sharedManager().setMedicalHistory(BackEndManager.sharedManager().getUserID(usernameField.getText()),medHistoryTextArea.getText());
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -450,7 +450,12 @@ public class WindowManager extends JFrame {
         contentPane.removeAll();
 
         //Title
-        JLabel titleLabel = new JLabel("Patient Dashboard");
+        JLabel titleLabel = null;
+        try {
+            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Patient Dashboard");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         titleLabel.setBounds(contentPane.getWidth() / 2 - 50, 25, 200, 14);
         contentPane.add(titleLabel);
 
@@ -933,6 +938,9 @@ public class WindowManager extends JFrame {
         contentPane.repaint();
     }
 
+    String[] doctorNames;
+    Doctor[] doctors;
+
     //Show Add Appointment page
     public void ShowMakeAppointment(int accountid){
         contentPane.removeAll();
@@ -964,10 +972,21 @@ public class WindowManager extends JFrame {
         contentPane.add(timecombobox);
 
         //TODO get all doctor names based on availability
-        String[] physicians = {"Physicians","Vimal", "Curtis", "Matus", "Bryan", "Ryan"};
-        JComboBox physiciancombobox = new JComboBox(physicians);
-        physiciancombobox.setBounds(contentPane.getWidth() / 2 - 275,contentPane.getHeight() / 2 + 50,200,50);
-        contentPane.add(physiciancombobox);
+        doctorNames = null;
+        doctors = null;
+        try {
+            doctors = BackEndManager.sharedManager().getDoctorList();
+            doctorNames = new String[doctors.length + 1];
+            doctorNames[0] = "Doctors";
+            for(int i = 1; i < doctors.length + 1; i++){
+                doctorNames[i] = "Dr. " + doctors[i - 1].name;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JComboBox doctorComboBox = new JComboBox(doctorNames);
+        doctorComboBox.setBounds(contentPane.getWidth() / 2 - 275, contentPane.getHeight() / 2 + 50, 200, 50);
+        contentPane.add(doctorComboBox);
 
         //Arbitrary
         String[] insurance = {"Insurance Provider", "Aetna", "Aviva", "Life Saver", "Life Care"};
@@ -976,7 +995,7 @@ public class WindowManager extends JFrame {
         contentPane.add(insurancecombobox);
 
         JLabel reasonlabel = new JLabel("Reason For Visit:");
-        reasonlabel.setBounds(contentPane.getWidth() / 2 , contentPane.getHeight() / 2 - 125, 200, 200);
+        reasonlabel.setBounds(contentPane.getWidth() / 2, contentPane.getHeight() / 2 - 125, 200, 200);
         contentPane.add(reasonlabel);
 
         JTextArea reasonTextArea = new JTextArea();
@@ -1001,23 +1020,23 @@ public class WindowManager extends JFrame {
         //Make Button
         JLabel emptyFields = new JLabel("Some fields are empty");
         emptyFields.setForeground(Color.RED);
-        emptyFields.setBounds(contentPane.getWidth() / 2, contentPane.getHeight()/2 + 225, 200, 20);
+        emptyFields.setBounds(contentPane.getWidth() / 2, contentPane.getHeight() / 2 + 225, 200, 20);
 
         JButton makeButton = new JButton("Make");
         makeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 //Check if all fields are selected
-                if(dayscombobox.getSelectedIndex() != 0 && monthcombobox.getSelectedIndex() != 0 && yearcombobox.getSelectedIndex() != 0 && physiciancombobox.getSelectedIndex() !=0 && timecombobox.getSelectedIndex() != 0 && insurancecombobox.getSelectedIndex() != 0){
+                if (dayscombobox.getSelectedIndex() != 0 && monthcombobox.getSelectedIndex() != 0 && yearcombobox.getSelectedIndex() != 0 && doctorComboBox.getSelectedIndex() != 0 && timecombobox.getSelectedIndex() != 0 && insurancecombobox.getSelectedIndex() != 0) {
                     //Create appointment
                     try {
-                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid,new String("Date: " + year[yearcombobox.getSelectedIndex()] + "-" + month[monthcombobox.getSelectedIndex()] + "-" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\n\nDoctor: " + physicians[physiciancombobox.getSelectedIndex()]),-1,BackEndManager.sharedManager().getUserID(physicians[physiciancombobox.getSelectedIndex()])));
+                        BackEndManager.sharedManager().createAppointment(new Appointment(accountid, new String("Date: " + year[yearcombobox.getSelectedIndex()] + "-" + month[monthcombobox.getSelectedIndex()] + "-" + day[dayscombobox.getSelectedIndex()] + "\nTime: " + time[timecombobox.getSelectedIndex()] + "\nPatient:" + BackEndManager.sharedManager().getName(accountid) + "\nDoctor: " + doctorNames[doctorComboBox.getSelectedIndex()]), -1, doctors[doctorComboBox.getSelectedIndex() - 1].userID));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                     //return to appointments list
                     ShowAppointments(accountid);
-                }else{
+                } else {
                     //Print Error: Empty fields
                     contentPane.add(emptyFields);
 
@@ -1052,7 +1071,7 @@ public class WindowManager extends JFrame {
         medicalhistoryTextArea.setEditable(false);
         medicalhistoryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
         try {
-            //medicalhistoryTextArea.setText(BackEndManager.sharedManager().getMedicalHistory(accountID));
+            medicalhistoryTextArea.setText(BackEndManager.sharedManager().getMedicalHistory(accountid));
         } catch (Exception e) {
             medicalhistoryTextArea.setText("No medical history found.");
             e.printStackTrace();
@@ -1091,7 +1110,7 @@ public class WindowManager extends JFrame {
         //Title
         JLabel titleLabel = null;
         try {
-            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Doctor Dashboard");
+            titleLabel = new JLabel(BackEndManager.sharedManager().getName(accountid) + "'s Doctor Dashboard");
         } catch (Exception e) {
             titleLabel = new JLabel("Doctor Dashboard");
             e.printStackTrace();
@@ -1229,7 +1248,7 @@ public class WindowManager extends JFrame {
         //Title
         JLabel titleLabel = null;
         try {
-            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s HSP Dashboard");
+            titleLabel = new JLabel(BackEndManager.sharedManager().getName(accountid) + "'s Dashboard");
         } catch (Exception e) {
             titleLabel = new JLabel("HSP Dashboard");
             e.printStackTrace();
@@ -1273,7 +1292,7 @@ public class WindowManager extends JFrame {
         //Title
         JLabel titleLabel = null;
         try {
-            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Labtech Dashboard");
+            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Dashboard");
         } catch (Exception e) {
             titleLabel = new JLabel("Labtech Dashboard");
             e.printStackTrace();
@@ -1377,6 +1396,7 @@ public class WindowManager extends JFrame {
                     }
                 });
                 //Anti Perms
+                //Not for: Lab Tech
                 if(dashboardType == 3){
                     patientHealthConditionsButton.setEnabled(false);
                 }
@@ -1407,6 +1427,7 @@ public class WindowManager extends JFrame {
                     }
                 });
                 //Anti Perms
+                //Not for: Lab Tech
                 if(dashboardType == 3){
                     patientPrescriptionsButton.setEnabled(false);
                 }
@@ -1422,6 +1443,7 @@ public class WindowManager extends JFrame {
                     }
                 });
                 //Anti Perms
+                //Not for: HSP
                 if(dashboardType == 2){
                     patientLabWorkButton.setEnabled(false);
                 }
@@ -1659,16 +1681,15 @@ public class WindowManager extends JFrame {
 
         //Medical History Text Area
         JTextArea medicalhistoryTextArea = new JTextArea();
-        //medicalhistoryTextArea.setBounds(20, contentPane.getHeight() / 2 - 200, contentPane.getWidth() - 40, 375);
         medicalhistoryTextArea.setWrapStyleWord(true);
         medicalhistoryTextArea.setLineWrap(true);
         medicalhistoryTextArea.setFocusable(true);
         medicalhistoryTextArea.setEditable(true);
         medicalhistoryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
         try {
-            //medicalhistoryTextArea.setText(BackEndManager.sharedManager().getMedicalHistory(accountID));
+            medicalhistoryTextArea.setText(BackEndManager.sharedManager().getMedicalHistory(patientAccountid));
         } catch (Exception e) {
-            medicalhistoryTextArea.setText("No medical history found.");
+            medicalhistoryTextArea.setText("No connection to server...");
             e.printStackTrace();
         }
 
@@ -1682,14 +1703,12 @@ public class WindowManager extends JFrame {
         JButton backButton = new JButton("Save and Exit");
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                //TODO
                 //Save changes
-                /*try {
-                    BackEndManager.sharedManager().setMedicalHistory(patientAccountid);
+                try {
+                    BackEndManager.sharedManager().setMedicalHistory(patientAccountid,medicalhistoryTextArea.getText());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                   */
 
                 //Return to dashboard
                 ReturnToCurrentDashboard(accountid, dashboardType);
@@ -1705,7 +1724,180 @@ public class WindowManager extends JFrame {
 
     //Show Patient Prescriptions
     public void ShowPatientPrescriptions(int accountid, int dashboardType, int patientAccountid){
+        contentPane.removeAll();
 
+        Prescription[] prescriptionList;
+
+        try {
+            prescriptionList = BackEndManager.sharedManager().getPrescriptionList(patientAccountid);
+        } catch (Exception e) {
+            e.printStackTrace();
+            prescriptionList = null;
+        }
+
+        if(prescriptionList != null) {
+            //Create inner grid pane
+            int prescriptionCount = prescriptionList.length;
+
+            JPanel gridPane;
+            if (prescriptionCount <= 5) {
+                gridPane = new JPanel(new GridLayout(6, 1));
+            } else {
+                gridPane = new JPanel(new GridLayout(prescriptionCount, 1));
+            }
+
+            //Prescriptions List Area
+            JScrollPane scrollPane = new JScrollPane(gridPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 200, 740, 370);
+
+            for (int i = 0; i < prescriptionCount; i++) {
+                JPanel resultsPane = new JPanel();
+                resultsPane.setBackground(panelColor);
+                resultsPane.setBorder(BorderFactory.createRaisedBevelBorder());
+                resultsPane.setMinimumSize(new Dimension(scrollPane.getWidth(), 370 / 5));
+
+                JTextArea entryArea = new JTextArea(2,20);
+               // if(prescriptionList[i].info.length() >= 300){
+                //    entryArea.setText("Hover for full info...");
+                //}else {
+                    entryArea.setText(prescriptionList[i].info);
+               //}
+                entryArea.setToolTipText(prescriptionList[i].info);
+                entryArea.setWrapStyleWord(true);
+                entryArea.setLineWrap(true);
+                entryArea.setOpaque(false);
+                entryArea.setEditable(false);
+                entryArea.setFocusable(false);
+                entryArea.setMinimumSize(new Dimension(scrollPane.getWidth() / 2, 20));
+                resultsPane.add(entryArea);
+
+                //Print Precription
+                JButton printPrescriptionButton = new JButton("Print");
+                printPrescriptionButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                printPrescriptionButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Print Prescription Info
+                        try {
+                            entryArea.print();
+                        } catch (PrinterException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                //No Anti Perms
+                resultsPane.add(printPrescriptionButton);
+
+                //Remove Prescription
+                JButton removePrescriptionButton = new JButton("Remove");
+                removePrescriptionButton.setBounds(resultsPane.getWidth() * 3 / 4, 0, resultsPane.getWidth() / 4, resultsPane.getHeight());
+                removePrescriptionButton.putClientProperty("prescriptionID", prescriptionList[i].prescriptionID);    //Used to store the patien ID on button object, java is nifty
+                removePrescriptionButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        //Remove Prescription
+                        try {
+                            BackEndManager.sharedManager().removePrescription((int) removePrescriptionButton.getClientProperty("prescriptionID"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        //Reshow page
+                        ShowPatientPrescriptions(accountid,dashboardType,patientAccountid);
+                    }
+                });
+                //Anti Perms
+                //Not for: HSP
+                if(dashboardType == 2){
+                    removePrescriptionButton.setEnabled(false);
+                }
+                resultsPane.add(removePrescriptionButton);
+
+                gridPane.add(resultsPane);
+            }
+            contentPane.add(scrollPane);
+        }
+
+        //Create Prescription Button
+        JButton createPrescriptionButton = new JButton("Create Prescription");
+        createPrescriptionButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 - 240, 150, 30);
+        createPrescriptionButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Show Create Prescription Page
+                ShowCreatePrescription(accountid, dashboardType, patientAccountid);
+            }
+        });
+        //Anti Perms
+        //Not for: HSP
+        if(dashboardType == 2){
+            createPrescriptionButton.setEnabled(false);
+        }
+        contentPane.add(createPrescriptionButton);
+
+        //Back Button
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Return to dashboard
+                ReturnToCurrentDashboard(accountid, dashboardType);
+            }
+        });
+        backButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 70, 30);
+
+        contentPane.add(backButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    //Show Create Prescription
+    public void ShowCreatePrescription(int accountid, int dashboardType, int patientAccountid){
+        contentPane.removeAll();
+
+        //Prescription Label
+        JLabel prescriptionLabel = null;
+        try {
+            prescriptionLabel = new JLabel("Creating new prescription for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+        } catch (Exception e) {
+            prescriptionLabel = new JLabel("Creating new prescription for patient.");
+            e.printStackTrace();
+        }
+        prescriptionLabel.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 - 250, 250, 50);
+        contentPane.add(prescriptionLabel);
+
+        //Prescription Text Area
+        JTextArea prescriptionTextArea = new JTextArea();
+        prescriptionTextArea.setWrapStyleWord(true);
+        prescriptionTextArea.setLineWrap(true);
+        prescriptionTextArea.setFocusable(true);
+        prescriptionTextArea.setEditable(true);
+        prescriptionTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+        prescriptionTextArea.setText("Enter info here...");
+
+        //Scroll Pane
+        JScrollPane scrollPane = new JScrollPane(prescriptionTextArea);
+        scrollPane.setBounds(20, contentPane.getHeight() / 2 - 200, contentPane.getWidth() - 40, 375);
+
+        contentPane.add(scrollPane);
+
+        //Create Button
+        JButton createButton = new JButton("Create and Exit");
+        createButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Save changes
+                try {
+                    BackEndManager.sharedManager().createPrescription(new Prescription(patientAccountid, prescriptionTextArea.getText(),-1));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                //Return Show Prescriptions page
+                ShowPatientPrescriptions(accountid, dashboardType, patientAccountid);
+            }
+        });
+        createButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 150, 30);
+        contentPane.add(createButton);
+
+        contentPane.revalidate();
+        contentPane.repaint();
     }
 
     //Show Patient Lab Results
@@ -1713,6 +1905,7 @@ public class WindowManager extends JFrame {
 
     }
 
+    //Returns to correct dashboard
     public void ReturnToCurrentDashboard(int accountid, int dashboardType){
         switch(dashboardType){
             case (0):

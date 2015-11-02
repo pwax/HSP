@@ -383,7 +383,7 @@ public class WindowManager extends JFrame {
                 contentPane.revalidate();
 
                 if(fnameField.getText().compareTo("") != 0 && lnameField.getText().compareTo("") != 0 && usernameField.getText().compareTo("") != 0 && passwordField.getText().compareTo("") != 0 && confirmPasswordField.getText().compareTo("") != 0 && emailField.getText().compareTo("") != 0 && phoneField.getText().compareTo("") != 0){
-                    if((accountType != 0) || (ssnField.getText().length() == 10 && insuranceField.getText().compareTo("") != 0)) {
+                    if((accountType != 0) || (ssnField.getText().length() == 9 && insuranceField.getText().compareTo("") != 0)) {
                         if (confirmPasswordField.getText().compareTo(passwordField.getText()) == 0) {
                             //Check username doesn't already exist
                             boolean alreadyExists = false;
@@ -419,7 +419,7 @@ public class WindowManager extends JFrame {
                             contentPane.revalidate();
                         }
                     }else{
-                        if(ssnField.getText().length() != 10) {
+                        if(ssnField.getText().length() != 9) {
                             //Print Error: incorrect SSN entry
                             contentPane.add(incorrectSSNEntryLabel);
 

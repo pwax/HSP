@@ -852,24 +852,24 @@ public class BackEndManager {
             Connection userConnection = getUserConnection();
             Statement statement = userConnection.createStatement();
 
-            String sqlForCount = "SELECT COUNT(*) AS count FROM Users WHERE username LIKE '%"+substring+"%' AND accountType=0";
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Users WHERE firstName LIKE '%"+substring+"%' AND accountType=0";
             ResultSet setCount = statement.executeQuery(sqlForCount);
             if (setCount.next()){
                 int count = setCount.getInt("count");
 
                 patients = new Patient[count];
 
-                String sql = "SELECT id, username FROM Users WHERE  username LIKE '%"+substring+"%' AND accountType=0";
+                String sql = "SELECT id, firstName FROM Users WHERE  firstName LIKE '%"+substring+"%' AND accountType=0";
 
                 ResultSet patientSet = statement.executeQuery(sql);
 
                 patientSet.next();
 
                 for (int i = 0; i < count; i++) {
-                    String usernameFromServer = patientSet.getString("username");
+                    String firstNameFromServer = patientSet.getString("firstName");
                     int userIDFromServer = patientSet.getInt("id");
 
-                    Patient patient = new Patient(usernameFromServer,userIDFromServer);
+                    Patient patient = new Patient(firstNameFromServer,userIDFromServer);
 
                     patients[i] = patient;
 

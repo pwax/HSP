@@ -457,7 +457,7 @@ public class WindowManager extends JFrame {
         //Title
         JLabel titleLabel = null;
         try {
-            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Patient Dashboard");
+            titleLabel = new JLabel(BackEndManager.sharedManager().getName(accountid) + "'s Patient Dashboard");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -666,7 +666,7 @@ public class WindowManager extends JFrame {
                     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
                     Calendar cal = Calendar.getInstance();
                     try {
-                        BackEndManager.sharedManager().createHealthConditionEntry(new HealthCareConditionEntry(accountid,"Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum));
+                        BackEndManager.sharedManager().createHealthConditionEntry(new HealthCareConditionEntry(accountid,"Date and Time: " + dateFormat.format(cal.getTime()) + "\nIssue: " + ailmentTypes[ailmentList.getSelectedIndex()] + "\nSeverity: " + severityNum));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -675,9 +675,9 @@ public class WindowManager extends JFrame {
                     if(severityNum == 5 || ailmentList.getSelectedIndex() > 0 && ailmentList.getSelectedIndex() < 7){
                         //Create Alert
                         try {
-                            BackEndManager.sharedManager().createAlert(new Alert(accountid,"Date and Time:" + dateFormat.format(cal.getTime()) + "\nIssue:" + ailmentTypes[ailmentList.getSelectedIndex()] + "\tSeverity:" + severityNum,-1));
+                            BackEndManager.sharedManager().createAlert(new Alert(accountid,"Date and Time: " + dateFormat.format(cal.getTime()) + "\nIssue: " + ailmentTypes[ailmentList.getSelectedIndex()] + "\nSeverity: " + severityNum,-1));
                         } catch (Exception e) {
-                            System.out.println("Failed maknig new alert");
+                            System.out.println("Failed making new alert");
                             e.printStackTrace();
                         }
 
@@ -1265,7 +1265,7 @@ public class WindowManager extends JFrame {
         //Title
         JLabel titleLabel = null;
         try {
-            titleLabel = new JLabel(BackEndManager.sharedManager().getUsername(accountid) + "'s Dashboard");
+            titleLabel = new JLabel(BackEndManager.sharedManager().getName(accountid) + "'s Dashboard");
         } catch (Exception e) {
             titleLabel = new JLabel("Labtech Dashboard");
             e.printStackTrace();
@@ -1454,7 +1454,7 @@ public class WindowManager extends JFrame {
         //Ailment Label
         JLabel ailmentLabel;
         try {
-            ailmentLabel = new JLabel("What is " + BackEndManager.sharedManager().getUsername(patientAccountid) + "'s issue?");
+            ailmentLabel = new JLabel("What is " + BackEndManager.sharedManager().getName(patientAccountid) + "'s issue?");
         } catch (Exception e) {
             ailmentLabel = new JLabel("What is the patient's issue?");
             e.printStackTrace();
@@ -1644,7 +1644,7 @@ public class WindowManager extends JFrame {
         //Medical History Label
         JLabel medicalhistoryLabel = null;
         try {
-            medicalhistoryLabel = new JLabel("Editing " + BackEndManager.sharedManager().getUsername(patientAccountid) + "'s Medical History");
+            medicalhistoryLabel = new JLabel("Editing " + BackEndManager.sharedManager().getName(patientAccountid) + "'s Medical History");
         } catch (Exception e) {
             medicalhistoryLabel = new JLabel("Editing Patient's Medical History");
             e.printStackTrace();
@@ -1702,7 +1702,7 @@ public class WindowManager extends JFrame {
         //Prescription Label
         JLabel prescriptionLabel = null;
         try {
-            prescriptionLabel = new JLabel("Viewing prescriptions for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+            prescriptionLabel = new JLabel("Viewing prescriptions for " + BackEndManager.sharedManager().getName(patientAccountid));
         } catch (Exception e) {
             prescriptionLabel = new JLabel("Viewing prescriptions for patient.");
             e.printStackTrace();
@@ -1835,7 +1835,7 @@ public class WindowManager extends JFrame {
         //Prescription Label
         JLabel prescriptionLabel = null;
         try {
-            prescriptionLabel = new JLabel("Creating new prescription for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+            prescriptionLabel = new JLabel("Creating new prescription for " + BackEndManager.sharedManager().getName(patientAccountid));
         } catch (Exception e) {
             prescriptionLabel = new JLabel("Creating new prescription for patient.");
             e.printStackTrace();
@@ -1887,7 +1887,7 @@ public class WindowManager extends JFrame {
         //Lab Work Label
         JLabel labworkLabel = null;
         try {
-            labworkLabel = new JLabel("Viewing lab records for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+            labworkLabel = new JLabel("Viewing lab records for " + BackEndManager.sharedManager().getName(patientAccountid));
         } catch (Exception e) {
             labworkLabel = new JLabel("Viewing lab records for patient.");
             e.printStackTrace();
@@ -2053,7 +2053,7 @@ public class WindowManager extends JFrame {
         //Prescription Label
         JLabel prescriptionLabel = null;
         try {
-            prescriptionLabel = new JLabel("Creating new lab record for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+            prescriptionLabel = new JLabel("Creating new lab record for " + BackEndManager.sharedManager().getName(patientAccountid));
         } catch (Exception e) {
             prescriptionLabel = new JLabel("Creating new lab record for patient.");
             e.printStackTrace();
@@ -2105,7 +2105,7 @@ public class WindowManager extends JFrame {
         //Labrecord Label
         JLabel labrecordLabel = null;
         try {
-            labrecordLabel = new JLabel("Updating lab record for " + BackEndManager.sharedManager().getUsername(patientAccountid));
+            labrecordLabel = new JLabel("Updating lab record for " + BackEndManager.sharedManager().getName(patientAccountid));
         } catch (Exception e) {
             labrecordLabel = new JLabel("Updating lab record for patient.");
             e.printStackTrace();

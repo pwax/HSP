@@ -33,8 +33,7 @@ public class WindowManager extends JFrame {
         contentPane.setLayout(null);
         setContentPane(contentPane);
         this.setVisible(true);
-        //ShowLogin();
-        ShowStatReports(0,0,null);
+        ShowLogin();
     }
 //endregion
 

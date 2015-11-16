@@ -1007,4 +1007,143 @@ public class BackEndManager {
 
         return accountType;
     }
+
+    public int getHSPCount(){
+        try {
+            //Connection
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            //HSP Count
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Users WHERE accountType = 2";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()) {
+                return setCount.getInt("count");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+        return 0;
+    }
+
+    public int getLabTechCount(){
+        try {
+            //Connection
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            //LabTech Count
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Users WHERE accountType = 3";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()) {
+                return setCount.getInt("count");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+        return 0;
+    }
+
+    public Patient[] getPatientsAndInsurace(){
+        Patient[] patients;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM Users WHERE accountType = 0";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+
+                patients = new Patient[count];
+
+                String sql = "SELECT id, firstName, insurance FROM Users WHERE accountType = 0";
+
+                ResultSet patientSet = statement.executeQuery(sql);
+
+                patientSet.next();
+
+                for (int i = 0; i < count; i++) {
+                    String firstNameFromServer = patientSet.getString("firstName");
+                    int userIDFromServer = patientSet.getInt("id");
+                    String insuranceFromServer = patientSet.getString("insurance");
+
+                    Patient patient = new Patient(firstNameFromServer,userIDFromServer,insuranceFromServer);
+
+                    patients[i] = patient;
+
+                    patientSet.next();
+                }
+            }else {
+                System.out.println("no results");
+                patients = null;
+            }
+
+            return patients;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            patients = null;
+
+            return patients;
+        }
+    }
+
+    public HealthCareConditionEntry[] getAllHealthConditionEntries(){
+
+        //Return all hcc entries
+
+        HealthCareConditionEntry[] entries;
+
+        try {
+            Connection userConnection = getUserConnection();
+            Statement statement = userConnection.createStatement();
+
+            System.out.println("getting health care entries");
+
+            String sqlForCount = "SELECT COUNT(*) AS count FROM HealthCareConditions";
+            ResultSet setCount = statement.executeQuery(sqlForCount);
+            if (setCount.next()){
+                int count = setCount.getInt("count");
+                System.out.println(count +" hcc entires");
+
+                entries = new HealthCareConditionEntry[count];
+
+                String sql = "SELECT id, userID, info FROM HealthCareConditions";
+
+                ResultSet entrySet = statement.executeQuery(sql);
+
+                entrySet.next();
+
+                for (int i = 0; i < count; i++) {
+                    int userIDFromServer = entrySet.getInt("userID");
+                    int userID = entrySet.getInt("userID");
+                    String info = entrySet.getString("info");
+
+                    System.out.println(userIDFromServer + " " + info);
+
+                    HealthCareConditionEntry entry = new HealthCareConditionEntry(userID, info);
+
+                    entries[i] = entry;
+
+                    entrySet.next();
+                }
+
+            }else {
+                System.out.println("no hcc");
+                entries = null;
+            }
+
+            return entries;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            entries = null;
+            return entries;
+        }
+    }
+
 }

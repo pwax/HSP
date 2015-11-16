@@ -1,9 +1,5 @@
 package com.g7;
 
-import com.sun.xml.internal.bind.v2.TODO;
-import sun.plugin.dom.css.RGBColor;
-import sun.plugin2.util.ColorUtil;
-
 import java.awt.*;
 
 import javax.swing.*;
@@ -30,13 +26,15 @@ public class WindowManager extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBounds(0, 0, 850, 550);
         setLocationRelativeTo(null);
+        setResizable(false);
         contentPane = new JPanel();
         contentPane.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         contentPane.setBackground(backgroundColor);
         contentPane.setLayout(null);
         setContentPane(contentPane);
         this.setVisible(true);
-        ShowLogin();
+        //ShowLogin();
+        ShowStatReports(0,0,null);
     }
 //endregion
 
@@ -230,9 +228,10 @@ public class WindowManager extends JFrame {
         insuranceLabel.setBounds(contentPane.getWidth() / 2 + 80, contentPane.getHeight() / 2 - 160, 140, 14);
         contentPane.add(insuranceLabel);
 
-        JTextField insuranceField = new JTextField();
-        insuranceField.setBounds(contentPane.getWidth() / 2 + 230, contentPane.getHeight() / 2 - 160, 116, 20);
-        contentPane.add(insuranceField);
+        String[] insuranceTypes = {"Cigna","Aetna","IHC","Humana","BCBS"};
+        JComboBox insuranceCombobox = new JComboBox(insuranceTypes);
+        insuranceCombobox.setBounds(contentPane.getWidth() / 2 + 230, contentPane.getHeight() / 2 - 160, 116, 20);
+        contentPane.add(insuranceCombobox);
 
         //Patient Medical History
         JLabel medHistoryLabel = new JLabel("Input any medical history below");
@@ -261,7 +260,7 @@ public class WindowManager extends JFrame {
                 contentPane.add(ssnLabel);
                 contentPane.add(ssnField);
                 contentPane.add(insuranceLabel);
-                contentPane.add(insuranceField);
+                contentPane.add(insuranceCombobox);
                 contentPane.add(medHistoryTextArea);
                 contentPane.add(medHistoryLabel);
 
@@ -279,7 +278,7 @@ public class WindowManager extends JFrame {
                 contentPane.remove(ssnLabel);
                 contentPane.remove(ssnField);
                 contentPane.remove(insuranceLabel);
-                contentPane.remove(insuranceField);
+                contentPane.remove(insuranceCombobox);
                 contentPane.remove(medHistoryTextArea);
                 contentPane.remove(medHistoryLabel);
 
@@ -297,7 +296,7 @@ public class WindowManager extends JFrame {
                 contentPane.remove(ssnLabel);
                 contentPane.remove(ssnField);
                 contentPane.remove(insuranceLabel);
-                contentPane.remove(insuranceField);
+                contentPane.remove(insuranceCombobox);
                 contentPane.remove(medHistoryTextArea);
                 contentPane.remove(medHistoryLabel);
 
@@ -315,7 +314,7 @@ public class WindowManager extends JFrame {
                 contentPane.remove(ssnLabel);
                 contentPane.remove(ssnField);
                 contentPane.remove(insuranceLabel);
-                contentPane.remove(insuranceField);
+                contentPane.remove(insuranceCombobox);
                 contentPane.remove(medHistoryTextArea);
                 contentPane.remove(medHistoryLabel);
 
@@ -383,7 +382,7 @@ public class WindowManager extends JFrame {
                 contentPane.revalidate();
 
                 if(fnameField.getText().compareTo("") != 0 && lnameField.getText().compareTo("") != 0 && usernameField.getText().compareTo("") != 0 && passwordField.getText().compareTo("") != 0 && confirmPasswordField.getText().compareTo("") != 0 && emailField.getText().compareTo("") != 0 && phoneField.getText().compareTo("") != 0){
-                    if((accountType != 0) || (ssnField.getText().length() == 10 && insuranceField.getText().compareTo("") != 0)) {
+                    if((accountType != 0) || (ssnField.getText().length() == 10)) {
                         if (confirmPasswordField.getText().compareTo(passwordField.getText()) == 0) {
                             //Check username doesn't already exist
                             boolean alreadyExists = false;
@@ -397,7 +396,7 @@ public class WindowManager extends JFrame {
                                 //Create new account
 
                                 try {
-                                    BackEndManager.sharedManager().registerNewUser(fnameField.getText(),lnameField.getText(),usernameField.getText(),passwordField.getText(),emailField.getText(),phoneField.getText(),accountType,ssnField.getText(),insuranceField.getText(),medHistoryTextArea.getText());
+                                    BackEndManager.sharedManager().registerNewUser(fnameField.getText(),lnameField.getText(),usernameField.getText(),passwordField.getText(),emailField.getText(),phoneField.getText(),accountType,ssnField.getText(),insuranceTypes[insuranceCombobox.getSelectedIndex()],medHistoryTextArea.getText());
                                     BackEndManager.sharedManager().setMedicalHistory(BackEndManager.sharedManager().getUserID(usernameField.getText()),medHistoryTextArea.getText());
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -419,19 +418,11 @@ public class WindowManager extends JFrame {
                             contentPane.revalidate();
                         }
                     }else{
-                        if(ssnField.getText().length() != 10) {
-                            //Print Error: incorrect SSN entry
-                            contentPane.add(incorrectSSNEntryLabel);
+                        //Print Error: incorrect SSN entry
+                        contentPane.add(incorrectSSNEntryLabel);
 
-                            contentPane.repaint();
-                            contentPane.revalidate();
-                        }else{
-                            //Print Error: Empty field
-                            contentPane.add(emptyFieldsLabel);
-
-                            contentPane.repaint();
-                            contentPane.revalidate();
-                        }
+                        contentPane.repaint();
+                        contentPane.revalidate();
                     }
                 }else{
                     //Print Error: Empty field
@@ -1116,6 +1107,16 @@ public class WindowManager extends JFrame {
         });
         contentPane.add(patientsearchButton);
 
+        JButton statReportButton = new JButton("Stat Reports");
+        statReportButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 150, 30);
+        statReportButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Stat Reports
+                ShowStatReports(accountid, 1, null);
+            }
+        });
+        contentPane.add(statReportButton);
+
         JButton logoutButton = new JButton("Logout");
         logoutButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 + 200, 150, 30);
         logoutButton.addActionListener(new ActionListener() {
@@ -1243,6 +1244,16 @@ public class WindowManager extends JFrame {
             }
         });
         contentPane.add(patientsearchButton);
+
+        JButton statReportButton = new JButton("Stat Reports");
+        statReportButton.setBounds(contentPane.getWidth() / 2 - 370, contentPane.getHeight() / 2 + 200, 150, 30);
+        statReportButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                //Stat Reports
+                ShowStatReports(accountid, 2, null);
+            }
+        });
+        contentPane.add(statReportButton);
 
         JButton logoutButton = new JButton("Logout");
         logoutButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 + 200, 150, 30);
@@ -2155,6 +2166,227 @@ public class WindowManager extends JFrame {
         contentPane.repaint();
     }
 
+    public void ShowStatReports(int accountid, int dashboardType, Graph graph){
+        contentPane.removeAll();
+
+        //If not displaying a desired graph
+        if(graph == null){
+
+            //useful User Types
+            try {
+                Patient[] patients = BackEndManager.sharedManager().getPatientsAndInsurace();
+                Doctor[] doctors = BackEndManager.sharedManager().getDoctorList();
+
+                //User Type Counts
+                int numPatients = patients.length;
+                int numDoctors = doctors.length;
+                int numHSPs = BackEndManager.sharedManager().getHSPCount();
+                int numLabTechs = BackEndManager.sharedManager().getLabTechCount();
+
+                ShowStatReports(accountid,dashboardType,new Graph("User Types", new String[]{"Patient","Doctor","HSP","Lab Tech"},new int[]{numPatients,numDoctors,numHSPs,numLabTechs}));
+            } catch (Exception e) {
+                System.out.print("Can't pull graph data");
+                e.printStackTrace();
+            }
+
+        }else {
+
+            JButton usertypesButton = new JButton("User Types");
+            usertypesButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent arg0) {
+                    try {
+                        Patient[] patients = BackEndManager.sharedManager().getPatientsAndInsurace();
+                        Doctor[] doctors = BackEndManager.sharedManager().getDoctorList();
+
+                        //User Type Counts
+                        int numPatients = patients.length;
+                        int numDoctors = doctors.length;
+                        int numHSPs = BackEndManager.sharedManager().getHSPCount();
+                        int numLabTechs = BackEndManager.sharedManager().getLabTechCount();
+
+                        ShowStatReports(accountid, dashboardType, new Graph("User Types", new String[]{"Patient", "Doctor", "HSP", "Lab Tech"}, new int[]{numPatients, numDoctors, numHSPs, numLabTechs}));
+                    } catch (Exception e) {
+                        System.out.print("Can't pull graph data");
+                        e.printStackTrace();
+                    }
+                }
+            });
+            usertypesButton.setBounds(100, 40, 150, 30);
+            contentPane.add(usertypesButton);
+
+            JButton seriousConditionsButton = new JButton("Serious Conditions");
+            seriousConditionsButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent arg0) {
+                    try {
+                        String[] seriousConditionList = new String[]{"Addiction", "Broken Limb", "Burn", "Concussion", "Head Injury", "Heart Attack"};
+
+                        HealthCareConditionEntry[] healthCareConditionEntries = BackEndManager.sharedManager().getAllHealthConditionEntries();
+
+                        //User Type Counts
+                        int[] nums = new int[seriousConditionList.length];
+
+                        for(int i = 0; i < healthCareConditionEntries.length; i++){
+                            String temp = healthCareConditionEntries[i].info;
+                            for(int j = 0; j < nums.length; j++){
+                                if(temp.contains(seriousConditionList[j])){
+                                    nums[j]++;
+                                    break;
+                                }
+                            }
+                        }
+
+                        ShowStatReports(accountid, dashboardType, new Graph("Serious Conditions", seriousConditionList,nums));
+                    } catch (Exception e) {
+                        System.out.print("Can't pull graph data");
+                        e.printStackTrace();
+                    }
+                }
+            });
+            seriousConditionsButton.setBounds(350, 40, 150, 30);
+            contentPane.add(seriousConditionsButton);
+
+            JButton insuranceTypes = new JButton("Insurance Types");
+            insuranceTypes.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent arg0) {
+                    try {
+                        Patient[] patients = BackEndManager.sharedManager().getPatientsAndInsurace();
+
+                        int CignaCount = 0;
+                        int AetnaCount = 0;
+                        int IHCCount = 0;
+                        int HumanaCount = 0;
+                        int BCBSCount = 0;
+
+                        //Insurance Types Counts
+                        for (int i = 0; i < patients.length; i++) {
+                            switch (patients[i].insurance) {
+                                case ("Cigna"):
+                                    CignaCount++;
+                                    break;
+                                case ("Aetna"):
+                                    AetnaCount++;
+                                    break;
+                                case ("IHC"):
+                                    IHCCount++;
+                                    break;
+                                case ("Humana"):
+                                    HumanaCount++;
+                                    break;
+                                case ("BCBS"):
+                                    BCBSCount++;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        ShowStatReports(accountid, dashboardType, new Graph("Insurance Types per User", new String[]{"Cigna", "Aetna", "IHC", "Humana", "BCBS"}, new int[]{CignaCount, AetnaCount, IHCCount, HumanaCount, BCBSCount}));
+                    } catch (Exception e) {
+                        System.out.print("Can't pull graph data");
+                        e.printStackTrace();
+                    }
+                }
+            });
+            insuranceTypes.setBounds(600, 40, 150, 30);
+            contentPane.add(insuranceTypes);
+
+            //Add the input panel if not void
+            graph.repaint();
+            contentPane.add(graph);
+
+            //Back Button
+            JButton backButton = new JButton("Back");
+            backButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent arg0) {
+                    //Return to dashboard
+                    ReturnToCurrentDashboard(accountid, dashboardType);
+                }
+            });
+            backButton.setBounds(contentPane.getWidth() / 2 + 220, contentPane.getHeight() / 2 + 200, 150, 30);
+            contentPane.add(backButton);
+
+            contentPane.revalidate();
+            contentPane.repaint();
+        }
+    }
+
+    public class Graph extends JPanel{
+
+        //Saved values of the group counts used for line spacing on paint
+        int[] groupCounts;
+
+        //Highest value represented on the graph, used for sizing of bars and line spacing on paint
+        int graphTopCount;
+
+
+        public Graph(String title, String[] xAxisGroups, int[] groupCounts) {
+            setBackground(backgroundColor);
+
+            setLayout(null);
+            setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+            setBounds(50, 100, 750, 340);
+
+            JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
+            titleLabel.setBounds(getWidth() / 2 - 100, 10, 200, 20);
+            add(titleLabel);
+
+            graphTopCount = groupCounts[0];
+
+            for (int i = 0; i < xAxisGroups.length; i++) {
+                JLabel tempGroupLabel = new JLabel(xAxisGroups[i],SwingConstants.CENTER);
+                //g.fillRect(((600 / groupCounts.length) * (i)) + (int)((600 / groupCounts.length) * ((double)1/6)) + 100, (int)(275 - (275-60)*((double)groupCounts[i] / graphTopCount)), (int)((600 / groupCounts.length) * ((double)2/3)),(int)((275-60)*((double)groupCounts[i]/ graphTopCount)) + 1);
+                tempGroupLabel.setBounds((int)(((600 / xAxisGroups.length) * (i)) + (double)(600 / xAxisGroups.length) / 2), 300, 200, 20);
+                add(tempGroupLabel);
+
+                //Find largest number
+                if(graphTopCount < groupCounts[i]){
+                    graphTopCount = groupCounts[i];
+                }
+            }
+
+            //Make it divisible by 4 so the count lines make sense
+            while(graphTopCount%4 != 0 || graphTopCount == 0){
+                graphTopCount++;
+            }
+
+            //Count Labels
+            for(int i = 0; i < 5; i++){
+                JLabel tempCountLabel = new JLabel(Integer.toString((int)(graphTopCount * (double)(i)/4)));
+                tempCountLabel.setBounds(75, (int) (275 - (i) * (double) 215 / 4) - 10, 100, 20);
+                add(tempCountLabel);
+            }
+
+            this.groupCounts = groupCounts;
+        }
+
+        public void paintComponent(Graphics g){
+            //Draw Background
+            g.setColor(panelColor);
+
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.setColor(Color.LIGHT_GRAY);
+
+            //Count Lines
+            for(int i = 0; i < 4; i++){
+                g.drawLine(100, (int)(275 - (i + 1)*(double)215/4), 700, (int)(275 - (i + 1)*(double)215/4));
+            }
+
+            g.setColor(Color.gray);
+
+            //X axis
+            g.drawLine(100, 275, 700, 275);
+
+            //Y Axis
+            g.drawLine(100, 275, 100, 60);
+
+            //Bars
+            for(int i = 0; i < groupCounts.length; i++){
+                g.fillRect(((600 / groupCounts.length) * (i)) + (int)((600 / groupCounts.length) * ((double)1/6)) + 100, (int)(275 - (275-60)*((double)groupCounts[i] / graphTopCount)), (int)((600 / groupCounts.length) * ((double)2/3)),(int)((275-60)*((double)groupCounts[i]/ graphTopCount)) + 1);
+            }
+        }
+    }
+
     //Returns to correct dashboard
     public void ReturnToCurrentDashboard(int accountid, int dashboardType){
         switch(dashboardType){
@@ -2174,4 +2406,6 @@ public class WindowManager extends JFrame {
                 System.out.print("No dashboard of type:" + dashboardType);
         }
     }
+
+
 }

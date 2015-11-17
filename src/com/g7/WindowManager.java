@@ -2317,7 +2317,6 @@ public class WindowManager extends JFrame {
         //Highest value represented on the graph, used for sizing of bars and line spacing on paint
         int graphTopCount;
 
-
         public Graph(String title, String[] xAxisGroups, int[] groupCounts) {
             setBackground(backgroundColor);
 
